@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2026–2027 业绩预测（三情景）</title>
+<style>
+:root{
+  --bg:#F5F6F8; --card:#FFF; --line:#E6E8EC; --line2:#EFF1F4;
+  --t1:#141A22; --t2:#5B6572; --t3:#8C96A3;
+  --blue:#2F5BEA; --blue-l:#EAF0FF; --teal:#0FA3A3; --amber:#E8952A;
+  --violet:#7C5CD6; --green:#0E9F6E; --red:#D64545;
+  --shadow:0 1px 2px rgba(20,26,34,.04),0 8px 24px -12px rgba(20,26,34,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t1);
+  font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",system-ui,sans-serif;
+  font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1400px;margin:0 auto;padding:22px 26px 60px}
+
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:14px}
+h1{font-size:21px;font-weight:650;letter-spacing:-.3px;display:flex;align-items:center;gap:10px}
+h1 .dot{width:7px;height:7px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 4px var(--blue-l)}
+.sub{color:var(--t3);font-size:12px;margin-top:5px;display:flex;gap:14px;flex-wrap:wrap}
+.sub b{color:var(--t2);font-weight:500}
+.pill{background:#EEF1F6;border-radius:20px;padding:5px 13px;font-size:11.5px;color:var(--t2)}
+.pill b{color:var(--t1);font-weight:600}
+
+.crumb{display:flex;align-items:center;gap:7px;font-size:12px;margin-bottom:13px;flex-wrap:wrap}
+.crumb .c{color:var(--t3);background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px 10px;cursor:pointer;transition:.14s}
+.crumb .c:hover{border-color:#C4D2FA;color:var(--blue)}
+.crumb .c.on{background:var(--blue-l);border-color:#C4D2FA;color:#2445B8;font-weight:600;cursor:default}
+.crumb .sep{color:#C4CBD6}
+
+.grid{display:grid;gap:13px}
+.k5{grid-template-columns:repeat(5,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.kpi{padding:15px 16px 14px;position:relative}
+.kpi.hl{border-color:#C4D2FA;background:linear-gradient(180deg,#FBFCFE,#fff)}
+.kpi .lab{color:var(--t2);font-size:12px;display:flex;align-items:center;gap:6px;font-weight:500}
+.kpi .lab i{width:2px;height:11px;border-radius:2px;display:inline-block}
+.valrow{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:9px 0 7px}
+.kpi .val{font-size:26px;font-weight:650;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi .val small{font-size:12px;font-weight:500;color:var(--t2);margin-left:3px;letter-spacing:0}
+.kpi .foot{font-size:11.5px;color:var(--t3);line-height:1.55}
+.kpi .nav{position:absolute;right:12px;top:13px;font-size:10.5px;color:var(--blue);background:var(--blue-l);
+  border-radius:5px;padding:2px 6px;cursor:pointer;font-weight:600;opacity:0;transition:.14s}
+.kpi:hover .nav{opacity:1}
+
+h2{font-size:13.5px;font-weight:640;margin:24px 0 11px;display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+h2 span.s{font-size:11.5px;color:var(--t3);font-weight:400}
+h2 .line{flex:1;height:1px;background:var(--line);min-width:20px}
+
+.c2{grid-template-columns:1.35fr 1fr}
+.c2e{grid-template-columns:1fr 1fr}
+.panel{padding:15px 17px 13px;min-width:0}
+.ptitle{font-size:12.5px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.ptitle .legend{display:flex;gap:11px;font-size:11px;color:var(--t2);font-weight:400;flex-wrap:wrap;align-items:center}
+.ptitle .legend i{width:8px;height:8px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:-1px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.tick{font-size:10.5px;fill:#98A1AD;font-family:inherit}
+.gridline{stroke:#F0F2F5;stroke-width:1}
+.bar{transition:opacity .12s;cursor:pointer}
+.bar:hover{opacity:.75}
+.lbl{font-size:10.5px;fill:#5B6572;font-family:inherit;font-weight:500}
+.lbl-w{font-size:10px;fill:#fff;font-family:inherit;font-weight:600}
+
+.seg{display:inline-flex;background:#F2F4F8;border-radius:7px;padding:2px;gap:2px}
+.seg button{border:0;background:none;font:inherit;font-size:11.5px;color:var(--t2);padding:3px 9px;border-radius:5px;cursor:pointer;white-space:nowrap}
+.seg button.on{background:#fff;color:var(--t1);font-weight:600;box-shadow:0 1px 2px rgba(20,26,34,.1)}
+
+.tblwrap{overflow:auto;max-height:420px;border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+thead th{position:sticky;top:0;background:#FAFBFC;z-index:2;text-align:right;padding:8px 11px;
+  font-weight:600;color:var(--t2);border-bottom:1px solid var(--line);white-space:nowrap;font-size:11.5px;cursor:pointer;user-select:none}
+thead th:first-child{text-align:left}
+thead th:hover{color:var(--blue)}
+thead th .ar{opacity:.35;font-size:9px;margin-left:2px}
+tbody td{padding:7px 11px;text-align:right;border-bottom:1px solid var(--line2)}
+tbody td:first-child{text-align:left;font-weight:500}
+tbody tr:hover td{background:#FAFBFD}
+tbody tr.tot td{font-weight:650;background:#FAFBFC;border-top:1px solid var(--line)}
+tbody tr.clickable{cursor:pointer}
+tbody tr.clickable:hover td{background:#F3F6FE}
+tbody tr.dim td{color:var(--t3)}
+td.na{color:#C0C7D2}
+
+.heat{width:100%;border-collapse:separate;border-spacing:3px;font-size:11.5px}
+.heat th{font-weight:600;color:var(--t2);font-size:11px;padding:4px 2px;text-align:center;border:0;background:none;position:static;white-space:nowrap}
+.heat th:first-child{text-align:left;padding-left:8px}
+.heat td{text-align:center;padding:7px 4px;border-radius:5px;border:0;color:#141A22;font-variant-numeric:tabular-nums;cursor:pointer}
+.heat td.nm{text-align:left;font-weight:500;background:none!important;cursor:pointer;padding-left:8px;color:var(--t1)}
+.heat td.nm:hover{color:var(--blue)}
+.heat tr:hover td:not(.nm){outline:1px solid #C4D2FA}
+
+.notes{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:4px 18px 16px}
+.note-h{display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:13px 0}
+.note-h .t{font-size:13px;font-weight:620}
+.note-h .c{font-size:11.5px;color:var(--t3)}
+.note-b{display:none;border-top:1px solid var(--line2);padding-top:14px}
+.note-b.open{display:block}
+.note-b h4{font-size:12px;font-weight:640;margin:14px 0 7px}
+.note-b h4:first-child{margin-top:0}
+.note-b li{font-size:12px;color:var(--t2);line-height:1.8;margin-left:17px}
+.note-b code{background:#F1F3F6;padding:1px 5px;border-radius:4px;font-size:11px;
+  font-family:"SF Mono",Consolas,monospace;color:#3C5795}
+.note-b .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 4px}
+.note-b .nd{background:#F7F9FC;border:1px solid var(--line);border-radius:7px;padding:7px 11px;font-size:11.5px;color:var(--t2);line-height:1.5}
+.note-b .nd b{color:var(--t1);display:block;font-size:11.5px;margin-bottom:1px}
+.note-b .ar2{color:#C4CBD6;font-size:13px}
+
+.tip{position:fixed;pointer-events:none;background:#1B2230;color:#fff;font-size:11.5px;
+  padding:7px 10px;border-radius:6px;opacity:0;transition:opacity .1s;z-index:99;line-height:1.55;white-space:nowrap;
+  box-shadow:0 6px 20px rgba(0,0,0,.22)}
+.tip.on{opacity:1}
+.tip b{color:#9DB6FF}
+
+.alert{background:#FFF8EC;border:1px solid #F5DFB8;border-radius:10px;padding:11px 15px;margin-bottom:15px;display:flex;gap:11px;align-items:flex-start}
+.alert .ico{flex:0 0 auto;width:17px;height:17px;margin-top:1px;color:#C97D12}
+.alert .txt{flex:1;font-size:12.5px;color:#7A5518;line-height:1.65}
+.alert b{color:#5E3F0C}
+.alert .more{background:none;border:0;font:inherit;font-size:11.5px;color:#8A6118;text-decoration:underline;cursor:pointer;padding:0;margin-top:5px}
+.alert .detail{display:none;margin-top:8px;padding-top:8px;border-top:1px dashed #E8D5B0;font-size:11.5px;line-height:1.75}
+.alert .detail.open{display:block;max-height:250px;overflow:auto;padding-right:6px}
+.alert .detail div{margin-bottom:4px}
+.alert .detail em{font-style:normal;color:#A5761C;font-weight:600;margin-right:4px}
+
+@media(max-width:1280px){.k5{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:1180px){.c2,.c2e{grid-template-columns:1fr}}
+@media(max-width:760px){.k5{grid-template-columns:repeat(2,1fr)}.wrap{padding:16px 14px 40px}}
+@media(max-width:520px){.k5{grid-template-columns:1fr}}
+
+/* ── 结论条 ── */
+.summary{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);
+  padding:17px 20px 15px;margin-bottom:15px}
+.summary .sh{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:11px}
+.summary .sh .t{font-size:13.5px;font-weight:650;letter-spacing:-.2px}
+.summary .sh .s{font-size:11.5px;color:var(--t3)}
+.summary ol{list-style:none;display:grid;gap:9px}
+.summary li{display:flex;gap:9px;font-size:12.5px;line-height:1.72;color:var(--t2)}
+.summary li .n{flex:0 0 auto;width:16px;height:16px;border-radius:4px;background:var(--blue-l);color:#2445B8;
+  font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:3px}
+.summary li b{color:var(--t1);font-weight:650}
+.summary li .hi{color:#B4472F;font-weight:650}
+.summary li .lo{color:#0E7A5F;font-weight:650}
+.summary .foot{margin-top:12px;padding-top:10px;border-top:1px solid var(--line2);
+  font-size:11px;color:var(--t3);display:flex;gap:16px;flex-wrap:wrap}
+
+/* ── 打印 / PDF ── */
+@media print{
+  @page{size:1069px 748px;margin:0}
+  body{background:#fff;font-size:11.5px}
+  .wrap{max-width:none;padding:0}
+  .card,.summary{box-shadow:none;border-color:#D8DCE4}
+  .summary,.notes,.alert{break-inside:avoid;page-break-inside:avoid}
+  .card{break-inside:avoid;page-break-inside:avoid}
+  .crumb,.seg,.kpi .nav,.more{display:none!important}
+  h2{margin:5px 0 4px;break-after:avoid;page-break-after:avoid}
+  .tblwrap{max-height:none;overflow:visible;margin-top:6px!important}
+  thead th{position:static;padding:6px 9px}
+  tbody td{padding:4px 9px}
+  .panel{padding:12px 14px 10px}
+  .ptitle{font-size:12px}
+  html,body{width:1068px!important;max-width:1068px!important;overflow-x:hidden}
+  .wrap{width:1068px!important;max-width:1068px!important;padding:0!important}
+  .grid.c2,.grid.c2e{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
+  .k5{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  .grid{min-width:0}
+  .panel,.card{min-width:0!important;max-width:100%}
+  .note-b{display:block!important;padding-top:6px}
+  .note-h .c{display:none}
+  .note-h{padding:8px 0}
+  .alert .detail{display:block!important;max-height:none!important}
+  .alert{padding:8px 12px;margin-bottom:8px}
+  .notes{padding:2px 14px 10px}
+  .note-b h4{margin:6px 0 3px}
+  .note-b li{line-height:1.5}
+  header{margin-bottom:8px}
+  .summary{padding:12px 16px 10px;margin-bottom:10px}
+}
+</style>
+<style>
+.summary{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);
+  padding:17px 20px 15px;margin-bottom:15px}
+.summary .sh{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:11px}
+.summary .sh .t{font-size:13.5px;font-weight:650;letter-spacing:-.2px}
+.summary .sh .s{font-size:11.5px;color:var(--t3)}
+.summary ol{list-style:none;display:grid;gap:9px}
+.summary li{display:flex;gap:9px;font-size:12.5px;line-height:1.72;color:var(--t2)}
+.summary li .n{flex:0 0 auto;width:16px;height:16px;border-radius:4px;background:var(--blue-l);color:#2445B8;
+  font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:3px}
+.summary li b{color:var(--t1);font-weight:650}
+.verdict{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0 4px}
+.vc{border:1px solid var(--line);border-radius:10px;padding:13px 15px;background:#fff}
+.vc .lab{font-size:11px;color:var(--t3);margin-bottom:6px}
+.vc .val{font-size:24px;font-weight:700;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1.1}
+.vc .u{font-size:11.5px;font-weight:600;margin-left:3px;color:var(--t3)}
+.vc .sub{font-size:10.8px;color:var(--t3);margin-top:6px;line-height:1.5}
+.vc.mid .val{color:#2F5BEA}
+.vc.warn .val{color:#B4472F}
+.vc.ok .val{color:#0E7A5F}
+.callout{border-left:3px solid #2F5BEA;background:#F6F8FE;border-radius:0 8px 8px 0;
+  padding:12px 15px;margin:12px 0;font-size:12.3px;line-height:1.75;color:var(--t2)}
+.callout b{color:var(--t1)}
+.callout.warn{border-left-color:#C9A46B;background:#FCF9F2}
+.callout.red{border-left-color:#B4472F;background:#FDF5F2}
+.cap{font-size:10.8px;color:var(--t3);margin-top:7px;line-height:1.6}
+.lg{display:flex;gap:14px;font-size:11px;color:var(--t3);align-items:center}
+.lg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+table.dt td.num,table.dt th.num{text-align:right;font-variant-numeric:tabular-nums}
+table.dt tr.hl td{background:#F4F7FF;font-weight:650}
+table.dt .dim{color:#8C96A3}
+.mx td{text-align:center;padding:6px 4px;font-variant-numeric:tabular-nums;font-size:11.5px;border:1px solid #EEF0F4}
+.mx th{text-align:center;font-size:11px;font-weight:600;color:var(--t3);padding:6px 4px;border:1px solid #EEF0F4}
+.mx td.hit{font-weight:700;color:#fff;background:#2F5BEA}
+.mx td.near{font-weight:650;color:#1F3A6E;background:#DDE7FF}
+.tblwrap{max-height:none}
+table.dt td{padding:7px 10px}
+table.dt th{padding:8px 10px}
+@media(max-width:1180px){.verdict{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1><span class="dot"></span>业绩预测 · 2026Q4 与 2027Q1</h1>
+    <div class="sub">
+      <span>观测期 <b>2026.1–10</b></span>
+      <span>数据截至 <b id="mCut"></b></span>
+      <span>预测区间 <b>2026.11–2027.3</b></span>
+      <span>情景 <b>悲观 / 中性 / 乐观</b></span>
+    </div>
+  </div>
+  <div class="pill">金额单位 <b>万元</b></div>
+</header>
+
+<div class="summary">
+  <div class="sh"><span class="t">核心结论</span><span class="s" id="sumScope">收入表「业绩金额」口径 · 含全部款项</span></div>
+  <ol id="sumList"></ol>
+  <div class="verdict" id="verdict"></div>
+</div>
+
+<h2>一、全年已经定型，但季度内的斜率差 2 倍<div class="line"></div></h2>
+<div class="panel">
+  <div class="ptitle">月度业绩：实际 + 三情景
+    <span class="s" id="fanNote"></span></div>
+  <div id="chFan"></div>
+  <div class="cap">柱＝实际业绩（10 月为 27 天折算值 <b id="octFull"></b> 万元，已入账 <b id="octRec"></b> 万元）；虚线＝三情景预测，浅色带＝悲观到乐观的区间。竖线右侧为预测期。</div>
+</div>
+
+<div class="grid c2" style="margin-top:14px">
+  <div class="panel">
+    <div class="ptitle">约见量是三情景的唯一分岔口
+      <span class="s">柱＝客场约见 · 线＝成交率</span></div>
+    <div id="chMeet"></div>
+    <div class="cap">约见按 7–10 月线性趋势外推并阻尼（φ=0.75），设下限 客场 35 / 主场 5 场。预测段成交率取中性情景。</div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">业绩几乎等于新接认款
+      <span class="s">月度款项构成</span></div>
+    <div id="chStack"></div>
+    <div class="cap">1–9 月新接占 <b id="newShare"></b>%，中期尾款＋新增户＋其他合计仅 <b id="resShare"></b>%。所以预测只需盯住新签这一个变量。</div>
+  </div>
+</div>
+
+<h2>二、逐月预测：11 月 251 / 385 / 552 万元<div class="line"></div></h2>
+<div class="tblwrap"><table class="dt" id="tblFc"></table></div>
+<div class="callout" id="fcNote"></div>
+
+<h2>三、要守住 600 万/月，客场约见得回到 65–90 场<div class="line"></div></h2>
+<div class="grid c2e">
+  <div class="panel">
+    <div class="ptitle">业绩矩阵<span class="s">行＝成交率 · 列＝客场约见场次</span></div>
+    <div id="mxWrap"></div>
+    <div class="cap">假设主场 5 场、主场成交率 <b id="mxRh"></b>%、单均 客 <b id="mxAk"></b> 万 / 主 <b id="mxAh"></b> 万、认款率 <b id="mxRec"></b>%、非新接 <b id="mxNn"></b>%。深蓝＝达到 600 万。</div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">保 600 万所需客场约见<span class="s">按各情景成交率</span></div>
+    <div id="needWrap"></div>
+    <div class="cap">当前 10 月客场约见 53 场、中性成交率下只值 <b id="curVal"></b> 万元。缺口不是"再努力一点"，而是量级差。</div>
+  </div>
+</div>
+
+<h2>四、哪个变量最要命<div class="line"></div></h2>
+<div class="tblwrap"><table class="dt" id="tblSens"></table></div>
+<div class="callout warn" id="sensNote"></div>
+
+<h2>五、模型可信度<div class="line"></div></h2>
+<div class="tblwrap"><table class="dt" id="tblBack"></table></div>
+<div class="callout red" id="backNote"></div>
+
+<h2>模型假设与口径<div class="line"></div></h2>
+<div class="notes">
+  <div class="note-h" id="noteH"><span class="t">计算链路 · 参数来源 · 五条假设 · 已知局限</span><span class="c" id="noteC">展开</span></div>
+  <div class="note-b" id="noteB"></div>
+</div>
+
+</div>
+
+<script>
+const P = {"meta": {"cut": "2026-10-29", "window": "2026.1–10 实际 · 2026.11–2027.3 预测", "phi": 0.75, "rec_rate": 92.0, "nonnew": 16.5, "nonnew_recent": 15.1, "factor": 1.073, "oct_recorded": 332.0, "oct_full": 381.2, "oct_days": 27, "oct_ht": {"低": 47.1, "中": 56.6, "高": 64.3}, "mature_k": 74.2, "rho": {"悲观": 63.5, "中性": 76.3, "乐观": 86.7}, "floor": {"客场": 35.0, "主场": 5.0}}, "actual": [{"mon": 1, "revenue": 1439.0, "new_recog": 1195.9, "nonnew": 243.0, "meet": 434, "meet_k": 122, "meet_h": 312, "deal": 280, "contract": 1268.3, "rate": 64.5, "avg": 4.53, "complete": true}, {"mon": 2, "revenue": 606.9, "new_recog": 519.7, "nonnew": 87.2, "meet": 111, "meet_k": 53, "meet_h": 58, "deal": 83, "contract": 713.7, "rate": 74.8, "avg": 8.6, "complete": true}, {"mon": 3, "revenue": 1001.7, "new_recog": 891.4, "nonnew": 110.3, "meet": 137, "meet_k": 88, "meet_h": 49, "deal": 108, "contract": 918.6, "rate": 78.8, "avg": 8.51, "complete": true}, {"mon": 4, "revenue": 1156.3, "new_recog": 999.7, "nonnew": 156.6, "meet": 111, "meet_k": 76, "meet_h": 35, "deal": 77, "contract": 1085.8, "rate": 69.4, "avg": 14.1, "complete": true}, {"mon": 5, "revenue": 1092.7, "new_recog": 967.4, "nonnew": 125.3, "meet": 109, "meet_k": 71, "meet_h": 38, "deal": 84, "contract": 1141.5, "rate": 77.1, "avg": 13.59, "complete": true}, {"mon": 6, "revenue": 1228.0, "new_recog": 993.5, "nonnew": 234.5, "meet": 114, "meet_k": 87, "meet_h": 27, "deal": 90, "contract": 1173.6, "rate": 78.9, "avg": 13.04, "complete": true}, {"mon": 7, "revenue": 1206.9, "new_recog": 1029.1, "nonnew": 177.8, "meet": 105, "meet_k": 78, "meet_h": 27, "deal": 84, "contract": 1053.9, "rate": 80.0, "avg": 12.55, "complete": true}, {"mon": 8, "revenue": 949.6, "new_recog": 868.3, "nonnew": 81.3, "meet": 103, "meet_k": 86, "meet_h": 17, "deal": 71, "contract": 916.6, "rate": 68.9, "avg": 12.91, "complete": true}, {"mon": 9, "revenue": 700.7, "new_recog": 585.1, "nonnew": 115.7, "meet": 72, "meet_k": 61, "meet_h": 11, "deal": 52, "contract": 591.5, "rate": 72.2, "avg": 11.37, "complete": true}, {"mon": 10, "revenue": 332.0, "new_recog": 187.3, "nonnew": 144.8, "meet": 63, "meet_k": 53, "meet_h": 10, "deal": 18, "contract": 154.8, "rate": 28.6, "avg": 8.6, "complete": false}], "trend": {"客场": {"slope": -10.0, "base": 53.0, "path": [45.5, 39.9, 35.7, 35.0, 35.0]}, "主场": {"slope": -5.7, "base": 10.0, "path": [5.7, 5.0, 5.0, 5.0, 5.0]}}, "params": {"rate_k": 74.2, "rate_h": 80.8, "rate_k_range": [65.1, 80.8], "avg_k": 12.58, "avg_h": 10.04, "per_k": 7.12, "per_h": 6.19, "rec_rate": 92.0, "nonnew": 16.5, "factor": 1.073}, "fc": [{"ym": "2026-11", "scen": "悲观", "meet_k": 38.7, "meet_h": 4.9, "contract": 233.8, "new_recog": 215.2, "nonnew": 35.6, "revenue": 250.8}, {"ym": "2026-11", "scen": "中性", "meet_k": 45.5, "meet_h": 5.7, "contract": 359.3, "new_recog": 330.7, "nonnew": 54.7, "revenue": 385.4}, {"ym": "2026-11", "scen": "乐观", "meet_k": 54.6, "meet_h": 6.9, "contract": 514.3, "new_recog": 473.4, "nonnew": 78.3, "revenue": 551.7}, {"ym": "2026-12", "scen": "悲观", "meet_k": 33.9, "meet_h": 4.2, "contract": 204.8, "new_recog": 188.5, "nonnew": 31.2, "revenue": 219.7}, {"ym": "2026-12", "scen": "中性", "meet_k": 39.9, "meet_h": 5.0, "contract": 314.8, "new_recog": 289.7, "nonnew": 47.9, "revenue": 337.7}, {"ym": "2026-12", "scen": "乐观", "meet_k": 47.9, "meet_h": 6.0, "contract": 450.5, "new_recog": 414.7, "nonnew": 68.6, "revenue": 483.3}, {"ym": "2027-01", "scen": "悲观", "meet_k": 30.3, "meet_h": 4.2, "contract": 185.3, "new_recog": 170.6, "nonnew": 28.2, "revenue": 198.8}, {"ym": "2027-01", "scen": "中性", "meet_k": 35.7, "meet_h": 5.0, "contract": 284.7, "new_recog": 262.1, "nonnew": 43.4, "revenue": 305.4}, {"ym": "2027-01", "scen": "乐观", "meet_k": 42.8, "meet_h": 6.0, "contract": 407.6, "new_recog": 375.2, "nonnew": 62.1, "revenue": 437.2}, {"ym": "2027-02", "scen": "悲观", "meet_k": 25.3, "meet_h": 3.6, "contract": 154.9, "new_recog": 142.6, "nonnew": 23.6, "revenue": 166.2}, {"ym": "2027-02", "scen": "中性", "meet_k": 29.8, "meet_h": 4.2, "contract": 238.1, "new_recog": 219.1, "nonnew": 36.2, "revenue": 255.4}, {"ym": "2027-02", "scen": "乐观", "meet_k": 35.7, "meet_h": 5.1, "contract": 340.7, "new_recog": 313.7, "nonnew": 51.9, "revenue": 365.5}, {"ym": "2027-03", "scen": "悲观", "meet_k": 31.2, "meet_h": 4.5, "contract": 191.4, "new_recog": 176.1, "nonnew": 29.1, "revenue": 205.3}, {"ym": "2027-03", "scen": "中性", "meet_k": 36.8, "meet_h": 5.2, "contract": 294.1, "new_recog": 270.7, "nonnew": 44.8, "revenue": 315.5}, {"ym": "2027-03", "scen": "乐观", "meet_k": 44.1, "meet_h": 6.3, "contract": 420.9, "new_recog": 387.5, "nonnew": 64.1, "revenue": 451.5}], "annual": [{"scen": "悲观", "q1_9": 9381.7, "oct": 381.2, "nov": 250.8, "dec": 219.7, "total": 10233.4, "q1_2027": 570.2}, {"scen": "中性", "q1_9": 9381.7, "oct": 381.2, "nov": 385.4, "dec": 337.7, "total": 10486.0, "q1_2027": 876.3}, {"scen": "乐观", "q1_9": 9381.7, "oct": 381.2, "nov": 551.7, "dec": 483.3, "total": 10797.9, "q1_2027": 1254.3}], "backtest": [{"origin": 6, "seg": "客场", "target": 7, "pred": 86.4, "actual": 78.0, "err": 8.4}, {"origin": 6, "seg": "客场", "target": 8, "pred": 86.0, "actual": 86.0, "err": -0.0}, {"origin": 6, "seg": "主场", "target": 7, "pred": 22.3, "actual": 27.0, "err": -4.7}, {"origin": 6, "seg": "主场", "target": 8, "pred": 18.7, "actual": 17.0, "err": 1.7}, {"origin": 7, "seg": "客场", "target": 8, "pred": 79.6, "actual": 86.0, "err": -6.4}, {"origin": 7, "seg": "客场", "target": 9, "pred": 80.9, "actual": 61.0, "err": 19.9}, {"origin": 7, "seg": "主场", "target": 8, "pred": 24.4, "actual": 17.0, "err": 7.4}, {"origin": 7, "seg": "主场", "target": 9, "pred": 22.4, "actual": 11.0, "err": 11.4}], "rec_ratio": [{"mon": 1, "contract": 1268.3, "new_recog": 1195.9, "ratio": 94.3}, {"mon": 2, "contract": 713.7, "new_recog": 519.7, "ratio": 72.8}, {"mon": 3, "contract": 918.6, "new_recog": 891.4, "ratio": 97.0}, {"mon": 4, "contract": 1085.8, "new_recog": 999.7, "ratio": 92.1}, {"mon": 5, "contract": 1141.5, "new_recog": 967.4, "ratio": 84.7}, {"mon": 6, "contract": 1173.6, "new_recog": 993.5, "ratio": 84.7}, {"mon": 7, "contract": 1053.9, "new_recog": 1029.1, "ratio": 97.7}, {"mon": 8, "contract": 916.6, "new_recog": 868.3, "ratio": 94.7}, {"mon": 9, "contract": 591.5, "new_recog": 585.1, "ratio": 98.9}, {"mon": 10, "contract": 154.8, "new_recog": 187.3, "ratio": 121.0}], "grid": {"q": [40, 50, 60, 70, 80, 90], "rate": [45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0], "rows": [{"rate": 45.0, "vals": [276.0, 337.0, 398.0, 458.0, 519.0, 580.0], "hit600": null}, {"rate": 50.0, "vals": [303.0, 371.0, 438.0, 506.0, 573.0, 641.0], "hit600": 90}, {"rate": 55.0, "vals": [330.0, 404.0, 479.0, 553.0, 627.0, 701.0], "hit600": 80}, {"rate": 60.0, "vals": [357.0, 438.0, 519.0, 600.0, 681.0, 762.0], "hit600": 70}, {"rate": 65.0, "vals": [384.0, 472.0, 560.0, 647.0, 735.0, 823.0], "hit600": 70}, {"rate": 70.0, "vals": [411.0, 506.0, 600.0, 695.0, 789.0, 884.0], "hit600": 60}, {"rate": 75.0, "vals": [438.0, 539.0, 641.0, 742.0, 843.0, 944.0], "hit600": 60}]}, "need600": [{"scen": "悲观", "rate_k": 47.1, "need_k": 90.0}, {"scen": "中性", "rate_k": 56.6, "need_k": 74.0}, {"scen": "乐观", "rate_k": 64.3, "need_k": 65.0}], "per_neutral": {"per_k": 7.12, "per_h": 6.19, "rk": 56.6, "rh": 61.7, "q_h": 5.0}, "sens": [{"item": "约见量 −10%", "nov": 346.9, "dec": 303.9, "delta": -38.5}, {"item": "约见量 +10%", "nov": 424.0, "dec": 371.4, "delta": 38.5}, {"item": "成交率 −5pp", "nov": 351.6, "dec": 308.0, "delta": -33.8}, {"item": "成交率 +5pp", "nov": 419.2, "dec": 367.3, "delta": 33.8}, {"item": "单均合同 −10%", "nov": 346.9, "dec": 303.9, "delta": -38.5}, {"item": "单均合同 +10%", "nov": 424.0, "dec": 371.4, "delta": 38.5}, {"item": "非新接系数 16.5%→11.5%", "nov": 368.7, "dec": 323.0, "delta": -16.7}, {"item": "非新接系数 16.5%→21.5%", "nov": 401.8, "dec": 352.0, "delta": 16.4}], "rev_mon": [{"mon": 1, "新接": 1195.9, "新增户": 160.0, "中期尾款": 81.7, "其他": 0.8, "后期效果费": 0.6, "续约": 0.0, "退费": 0.0}, {"mon": 2, "新接": 519.7, "新增户": 37.6, "中期尾款": 43.3, "其他": 0.8, "后期效果费": 5.5, "续约": 0.0, "退费": 0.0}, {"mon": 3, "新接": 891.4, "新增户": 41.9, "中期尾款": 50.1, "其他": 0.8, "后期效果费": 12.6, "续约": 4.9, "退费": 0.0}, {"mon": 4, "新接": 999.7, "新增户": 59.0, "中期尾款": 87.1, "其他": 5.1, "后期效果费": 1.7, "续约": 3.7, "退费": 0.0}, {"mon": 5, "新接": 967.4, "新增户": 99.4, "中期尾款": 19.9, "其他": 1.6, "后期效果费": 0.0, "续约": 4.4, "退费": 0.0}, {"mon": 6, "新接": 993.5, "新增户": 196.1, "中期尾款": 29.1, "其他": 6.2, "后期效果费": 0.6, "续约": 2.3, "退费": 0.0}, {"mon": 7, "新接": 1029.1, "新增户": 125.8, "中期尾款": 26.9, "其他": 19.4, "后期效果费": 0.0, "续约": 5.7, "退费": 0.0}, {"mon": 8, "新接": 868.3, "新增户": 58.2, "中期尾款": 18.8, "其他": 4.3, "后期效果费": 0.0, "续约": 0.0, "退费": 0.0}, {"mon": 9, "新接": 585.1, "新增户": 52.7, "中期尾款": 10.7, "其他": 50.4, "后期效果费": 0.0, "续约": 1.8, "退费": 0.0}, {"mon": 10, "新接": 187.3, "新增户": 14.9, "中期尾款": 10.6, "其他": 116.5, "后期效果费": 0.0, "续约": 2.8, "退费": 0.0}]};
+const $ = s => document.querySelector(s);
+const C = {blue:'#2F5BEA', violet:'#7C5CD6', teal:'#0FA3A3', amber:'#D9942B',
+           green:'#0E9F6E', red:'#B4472F', navy:'#1F3A6E', gray:'#8C96A3', grid:'#E8EBF0'};
+const mono = 'font-variant-numeric:tabular-nums';
+const f1 = v => v==null ? '—' : v.toFixed(1);
+const f0 = v => v==null ? '—' : Math.round(v).toLocaleString();
+const pc = v => v==null ? '—' : v.toFixed(1)+'%';
+const SC = ['悲观','中性','乐观'];
+const SC_C = {'悲观':C.red, '中性':C.blue, '乐观':C.green};
+
+// 预测月份序列
+const FYM = ['2026-11','2026-12','2027-01','2027-02','2027-03'];
+const FML = ['11月','12月','1月','2月','3月'];
+const byKey = {};
+P.fc.forEach(r => { (byKey[r.ym] = byKey[r.ym] || {})[r.scen] = r; });
+
+function nicemax(v){
+  if(v<=0) return 100;
+  const e = Math.pow(10, Math.floor(Math.log10(v)));
+  const n = v/e;
+  return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*e;
+}
+
+// ── 图1 业绩扇形 ──
+(function(){
+  const W=1010,H=330,pl=66,pr=78,pt=26,pb=46, iw=W-pl-pr, ih=H-pt-pb;
+  const acts = P.actual.map(a=>a.revenue);
+  acts[9] = P.meta.oct_full;                 // 10 月用折算值
+  const labels = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月'];
+  const all = acts.concat([]);
+  const fcVals = {悲观:[], 中性:[], 乐观:[]};
+  FYM.forEach(ym => SC.forEach(s => fcVals[s].push(byKey[ym][s].revenue)));
+  const maxY = nicemax(Math.max(...acts, ...fcVals.乐观)*1.08);
+  const N = 15;
+  const bw = iw/N*0.56;
+  const x = i => pl + bw/2 + (iw-bw)*i/(N-1);
+  const y = v => pt + ih*(1 - v/maxY);
+
+  let s = '';
+  // 网格
+  for(let t=0; t<=4; t++){
+    const v = maxY*t/4;
+    s += `<line x1="${pl}" x2="${pl+iw}" y1="${y(v)}" y2="${y(v)}" stroke="${C.grid}"/>`;
+    s += `<text x="${pl-8}" y="${y(v)+4}" text-anchor="end" font-size="10" fill="#98A1AD" style="${mono}">${Math.round(v)}</text>`;
+  }
+  // 2027 分界
+  s += `<line x1="${x(11.5)}" x2="${x(11.5)}" y1="${pt-14}" y2="${pt+ih}" stroke="#C9CFD9" stroke-dasharray="3 3"/>`;
+  s += `<text x="${x(11.5)+5}" y="${pt-4}" font-size="10" fill="#98A1AD">2027 →</text>`;
+
+  // 区间带（从 10 月接入）
+  const up = [[x(9), y(acts[9])]].concat(fcVals.乐观.map((v,i)=>[x(10+i), y(v)]));
+  const dn = [[x(9), y(acts[9])]].concat(fcVals.悲观.map((v,i)=>[x(10+i), y(v)]));
+  s += `<polygon points="${up.concat(dn.slice().reverse()).map(p=>p.join(',')).join(' ')}" fill="rgba(47,91,234,.10)"/>`;
+
+  // 实际柱
+  acts.forEach((v,i)=>{
+    const inc = (i===9);
+    const hgt = pt+ih-y(v);
+    s += `<rect x="${x(i)-bw/2}" y="${y(v)}" width="${bw}" height="${hgt}" rx="2"
+        fill="${inc?'#B9C6E8':C.blue}" opacity="${inc?.75:1}"/>`;
+    if(hgt > 34)
+      s += `<text x="${x(i)}" y="${y(v)+13}" text-anchor="middle" font-size="9"
+          fill="${inc?'#5B6572':'#fff'}" style="${mono}">${Math.round(v)}</text>`;
+    else
+      s += `<text x="${x(i)}" y="${y(v)-6}" text-anchor="middle" font-size="9.5"
+          fill="#5B6572" style="${mono}">${Math.round(v)}</text>`;
+  });
+  // 预测虚线
+  SC.forEach(sc=>{
+    const pts = [[x(9), y(acts[9])]].concat(fcVals[sc].map((v,i)=>[x(10+i), y(v)]));
+    s += `<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none"
+        stroke="${SC_C[sc]}" stroke-width="${sc==='中性'?2.6:1.7}"
+        stroke-dasharray="${sc==='中性'?'0':'5 3'}" stroke-linejoin="round" opacity="${sc==='中性'?1:.8}"/>`;
+    fcVals[sc].forEach((v,i)=>{
+      s += `<circle cx="${x(10+i)}" cy="${y(v)}" r="${sc==='中性'?3.6:2.6}" fill="#fff"
+          stroke="${SC_C[sc]}" stroke-width="${sc==='中性'?2:1.6}"/>`;
+    });
+    s += `<text x="${x(14)+9}" y="${y(fcVals[sc][4])+3.5}" font-size="10" font-weight="600"
+        fill="${SC_C[sc]}" text-anchor="start">${sc} ${Math.round(fcVals[sc][4])}</text>`;
+  });
+  // X 标签
+  labels.forEach((l,i)=>{
+    s += `<text x="${x(i)}" y="${pt+ih+18}" text-anchor="middle" font-size="10" fill="#8C96A3">${l}</text>`;
+  });
+  $('#chFan').innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${s}</svg>`;
+})();
+
+// ── 图2 约见 + 成交率 ──
+(function(){
+  const W=470,H=285,pl=50,pr=52,pt=24,pb=44, iw=W-pl-pr, ih=H-pt-pb;
+  const N=15;
+  const mk = P.actual.map(a=>a.meet_k);
+  const rt = P.actual.map(a=>a.rate);
+  const fq = P.trend['客场'].path;
+  const rk = P.per_neutral.rk;
+  const maxQ = nicemax(Math.max(...mk, ...fq)*1.20);
+  const bw = iw/N*0.52;
+  const x = i => pl + bw/2 + (iw-bw)*i/(N-1);
+  const yq = v => pt + ih*(1-v/maxQ);
+  const yr = v => pt + ih*(1-v/100);
+  let s='';
+  for(let t=0;t<=4;t++){
+    const v=maxQ*t/4;
+    s+=`<line x1="${pl}" x2="${pl+iw}" y1="${yq(v)}" y2="${yq(v)}" stroke="${C.grid}"/>`;
+    s+=`<text x="${pl-7}" y="${yq(v)+4}" text-anchor="end" font-size="9.5" fill="#98A1AD" style="${mono}">${Math.round(v)}</text>`;
+    s+=`<text x="${pl+iw+7}" y="${yr(t*25)+4}" font-size="9.5" fill="#B4842B" style="${mono}">${t*25}%</text>`;
+  }
+  // 65% 护栏（弱化，避免被误读成数据线）
+  s+=`<line x1="${pl}" x2="${pl+iw}" y1="${yr(65)}" y2="${yr(65)}" stroke="${C.red}"
+      stroke-dasharray="3 4" stroke-width="1.1" opacity=".45"/>`;
+  s+=`<text x="${pl+iw-2}" y="${yr(65)-4}" text-anchor="end" font-size="8.5"
+      fill="${C.red}" opacity=".75">65% 护栏</text>`;
+  // 2027 分界
+  s+=`<line x1="${x(9.5)}" x2="${x(9.5)}" y1="${pt-12}" y2="${pt+ih}" stroke="#C9CFD9" stroke-dasharray="3 3"/>`;
+  // 实际柱
+  mk.forEach((v,i)=>{
+    s+=`<rect x="${x(i)-bw/2}" y="${yq(v)}" width="${bw}" height="${pt+ih-yq(v)}" rx="2" fill="${C.blue}" opacity=".88"/>`;
+  });
+  // 预测柱
+  fq.forEach((v,i)=>{
+    s+=`<rect x="${x(10+i)-bw/2}" y="${yq(v)}" width="${bw}" height="${pt+ih-yq(v)}" rx="2"
+        fill="${C.blue}" opacity=".30"/>`;
+    s+=`<text x="${x(10+i)}" y="${yq(v)-5}" text-anchor="middle" font-size="8.5"
+        fill="#8C96A3" style="${mono}">${Math.round(v)}</text>`;
+  });
+  // 成交率：实际
+  const pts = rt.map((v,i)=>[x(i), yr(v)]);
+  s+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${C.amber}" stroke-width="2"/>`;
+  pts.forEach(p=>{ s+=`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#fff" stroke="${C.amber}" stroke-width="1.7"/>`; });
+  // 成交率：预测（水平虚线）
+  const fp = [[x(9), yr(rt[9])]].concat(fq.map((_,i)=>[x(10+i), yr(rk)]));
+  s+=`<polyline points="${fp.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${C.amber}"
+      stroke-width="1.6" stroke-dasharray="4 3" opacity=".65"/>`;
+  s+=`<text x="${x(12)}" y="${yr(rk)-7}" text-anchor="middle" font-size="8.5" fill="#B4842B">${rk}%</text>`;
+  s+=`<text x="${x(9)}" y="${yr(rt[9])-8}" text-anchor="middle" font-size="8.5"
+      fill="#fff" stroke="#fff" stroke-width="2.5" paint-order="stroke">${rt[9]}%</text>
+      <text x="${x(9)}" y="${yr(rt[9])-8}" text-anchor="middle" font-size="8.5" fill="#B4842B">${rt[9]}%</text>`;
+  // X 标签
+  ['1','2','3','4','5','6','7','8','9','10','11','12','1','2','3'].forEach((l,i)=>{
+    s+=`<text x="${x(i)}" y="${pt+ih+17}" text-anchor="middle" font-size="9" fill="#8C96A3">${l}</text>`;
+  });
+  s+=`<text x="${x(12)}" y="${pt+ih+30}" text-anchor="middle" font-size="8.5" fill="#B4BCC7">2027 年</text>`;
+  $('#chMeet').innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${s}</svg>`;
+})();
+
+// ── 图3 款项堆叠 ──
+(function(){
+  const W=470,H=285,pl=54,pr=16,pt=24,pb=44, iw=W-pl-pr, ih=H-pt-pb;
+  const N=P.rev_mon.length;
+  const cols=[['新接',C.blue],['新增户',C.teal],['中期尾款',C.violet],['其他',C.amber]];
+  const tot = P.rev_mon.map(r=>r['新接']+r['新增户']+r['中期尾款']+r['其他']);
+  const maxY = nicemax(Math.max(...tot)*1.1);
+  const bw = iw/N*0.50;
+  const x = i => pl + bw/2 + (iw-bw)*i/(N-1);
+  const y = v => pt + ih*(1-v/maxY);
+  let s='';
+  for(let t=0;t<=4;t++){
+    const v=maxY*t/4;
+    s+=`<line x1="${pl}" x2="${pl+iw}" y1="${y(v)}" y2="${y(v)}" stroke="${C.grid}"/>`;
+    s+=`<text x="${pl-7}" y="${y(v)+4}" text-anchor="end" font-size="9.5" fill="#98A1AD" style="${mono}">${Math.round(v)}</text>`;
+  }
+  P.rev_mon.forEach((r,i)=>{
+    let base=0;
+    cols.forEach(([k,c])=>{
+      const v=r[k];
+      if(v<=0) return;
+      const h=pt+ih-y(base)- (y(base+v)-y(base));
+      s+=`<rect x="${x(i)-bw/2}" y="${y(base+v)}" width="${bw}" height="${y(base)-y(base+v)}" fill="${c}" opacity=".92"/>`;
+      base+=v;
+    });
+    s+=`<text x="${x(i)}" y="${pt+ih+16}" text-anchor="middle" font-size="9.5" fill="#8C96A3">${r.mon}</text>`;
+  });
+  $('#chStack').innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${s}</svg>`;
+})();
+
+// ── 表1 逐月三情景 ──
+(function(){
+  let h = `<thead><tr><th style="width:88px">月份</th><th style="width:56px">情景</th>
+    <th class="num">客场约见</th><th class="num">主场约见</th>
+    <th class="num">合同额</th><th class="num">新接认款</th><th class="num">非新接</th>
+    <th class="num">业绩</th><th class="num">较 9 月</th></tr></thead><tbody>`;
+  FYM.forEach((ym,mi)=>{
+    const lab = ym;
+    SC.forEach((sc,si)=>{
+      const r = byKey[ym][sc];
+      const sep = P.actual[8].revenue;          // 2026 年 9 月，最后一个正常月
+      const mom = (r.revenue/sep-1)*100;
+      h += `<tr class="${sc==='中性'?'hl':''}">`;
+      if(si===0) h += `<td rowspan="3" style="vertical-align:middle;font-weight:600;
+          border-bottom:1px solid var(--line)">${lab}</td>`;
+      h += `<td style="color:${SC_C[sc]};font-weight:600">${sc}</td>
+        <td class="num">${f1(r.meet_k)}</td><td class="num">${f1(r.meet_h)}</td>
+        <td class="num">${f0(r.contract)}</td><td class="num">${f0(r.new_recog)}</td>
+        <td class="num">${f0(r.nonnew)}</td>
+        <td class="num" style="font-weight:650;color:${SC_C[sc]}">${f0(r.revenue)}</td>
+        <td class="num" style="color:${mom<0?'#0E7A5F':'#B4472F'}">${mom>=0?'+':''}${mom.toFixed(1)}%</td></tr>`;
+    });
+  });
+  h += `</tbody>`;
+  $('#tblFc').innerHTML = h;
+})();
+
+// ── 矩阵 ──
+(function(){
+  const Q = P.grid.q, R = P.grid.rate, rows = P.grid.rows;
+  let h = `<table class="mx" style="width:100%;border-collapse:collapse"><thead><tr><th>成交率＼约见</th>`;
+  Q.forEach(q => h += `<th>${q}</th>`);
+  h += `</tr></thead><tbody>`;
+  rows.forEach(r=>{
+    h += `<tr><th>${r.rate}%</th>`;
+    r.vals.forEach(v=>{
+      const cls = v>=600 ? 'hit' : (v>=520 ? 'near' : '');
+      h += `<td class="${cls}">${Math.round(v)}</td>`;
+    });
+    h += `</tr>`;
+  });
+  h += `</tbody></table>`;
+  $('#mxWrap').innerHTML = h;
+})();
+
+// ── 保 600 万所需约见 ──
+(function(){
+  let h = `<table class="dt"><thead><tr><th>情景</th><th class="num">成交率(客)</th>
+    <th class="num">需客场约见</th><th class="num">相对当前 53 场</th></tr></thead><tbody>`;
+  P.need600.forEach(r=>{
+    const gap = r.need_k ? (r.need_k/53-1)*100 : null;
+    h += `<tr><td>${r.scen}</td><td class="num">${r.rate_k}%</td>
+      <td class="num" style="font-weight:650">${r.need_k==null?'达不到':Math.round(r.need_k)}</td>
+      <td class="num" style="color:#B4472F">${gap==null?'—':(gap>0?'+':'')+gap.toFixed(0)+'%'}</td></tr>`;
+  });
+  h += `</tbody></table>`;
+  $('#needWrap').innerHTML = h;
+})();
+
+// ── 表3 敏感性 ──
+(function(){
+  let h = `<thead><tr><th>变动项</th><th class="num">11 月业绩</th>
+    <th class="num">12 月业绩</th><th class="num">11 月影响</th></tr></thead><tbody>`;
+  P.sens.forEach(r=>{
+    h += `<tr><td>${r.item}</td><td class="num">${f1(r.nov)}</td><td class="num">${f1(r.dec)}</td>
+      <td class="num" style="color:${r.delta<0?'#0E7A5F':'#B4472F'}">${r.delta>0?'+':''}${f1(r.delta)}</td></tr>`;
+  });
+  h += `</tbody>`;
+  $('#tblSens').innerHTML = h;
+})();
+
+// ── 表4 回测 ──
+(function(){
+  let h = `<thead><tr><th>原点</th><th>预测月</th><th>口径</th>
+    <th class="num">预测</th><th class="num">实际</th><th class="num">误差</th></tr></thead><tbody>`;
+  P.backtest.forEach(r=>{
+    h += `<tr><td>${r.origin} 月</td><td>${r.target} 月</td><td>${r.seg}约见</td>
+      <td class="num">${r.pred.toFixed(0)}</td><td class="num">${r.actual}</td>
+      <td class="num" style="color:${r.err>0?'#B4472F':'#0E7A5F'}">${r.err>0?'+':''}${r.err.toFixed(0)}</td></tr>`;
+  });
+  h += `</tbody>`;
+  $('#tblBack').innerHTML = h;
+})();
+
+// ── 结论 ──
+(function(){
+  const q19 = P.annual[1].q1_9, tot = P.annual[1].total;
+  const nov = byKey['2026-11'], dec = byKey['2026-12'];
+  const q1 = P.annual.map(a=>a.q1_2027);
+  const cur = P.meta.oct_full;
+  const H1avg = P.actual.slice(0,6).reduce((a,b)=>a+b.revenue,0)/6;
+  const Q4avg = (nov.中性.revenue+dec.中性.revenue)/2;
+  const L = [
+    `<b>全年落在 1.02–1.08 亿，差别不大</b>　1–9 月已锁定 <b>${f0(q19)} 万</b>（占中性全年 <b>${(q19/tot*100).toFixed(0)}%</b>），
+     再叠加 10 月折算 ${f0(P.meta.oct_full)} 万和 11–12 月，全年三情景为
+     <b>${f0(P.annual[0].total)} / ${f0(P.annual[1].total)} / ${f0(P.annual[2].total)} 万</b>，极差只有 ${f0(P.annual[2].total-P.annual[0].total)} 万。`,
+    `<b>但斜率差 2 倍以上</b>　11 月三情景 <b>${f0(nov.悲观.revenue)} / ${f0(nov.中性.revenue)} / ${f0(nov.乐观.revenue)} 万</b>，
+     中性 ${f0(nov.中性.revenue)} 万仅与 10 月折算 ${f0(cur)} 万持平，<b>意味着按当前趋势不会自然回升</b>。`,
+    `<b>2027Q1 才是真正的分水岭</b>　三情景 <b>${f0(q1[0])} / ${f0(q1[1])} / ${f0(q1[2])} 万</b>，
+     悲观与乐观相差 <b>${(q1[2]/q1[0]).toFixed(1)} 倍</b>。分岔几乎全在成交率能否从 10 月水平修复。`,
+    `<b>要守住 600 万/月，客场约见得回到 ${Math.round(P.need600[1].need_k)} 场</b>　中性成交率下 53 场只值
+     <b>${f0((53*P.per_neutral.per_k+5*P.per_neutral.per_h)*P.meta.factor)} 万</b>。
+     这也解释了为什么 9 月 61 场能做出 700 万、10 月 53 场只有 380 万。`
+  ];
+  $('#sumList').innerHTML = L.map((t,i)=>`<li><span class="n">${i+1}</span><div>${t}</div></li>`).join('');
+
+  const cards = [
+    {lab:'2026 全年（中性）', val:f0(P.annual[1].total), unit:'万元', cls:'mid',
+     sub:`区间 ${f0(P.annual[0].total)}–${f0(P.annual[2].total)} 万`},
+    {lab:'11–12 月合计（中性）', val:f0(nov.中性.revenue+dec.中性.revenue), unit:'万元', cls:'warn',
+     sub:`月均 ${f0((nov.中性.revenue+dec.中性.revenue)/2)} 万，与 10 月持平`},
+    {lab:'2027Q1（中性）', val:f0(q1[1]), unit:'万元', cls:'warn',
+     sub:`区间 ${f0(q1[0])}–${f0(q1[2])} 万，相差 ${(q1[2]/q1[0]).toFixed(1)} 倍`},
+    {lab:'月均业绩对比', val:`${Math.round(H1avg)} → ${Math.round(Q4avg)}`, unit:'万元', cls:'',
+     sub:`上半年月均 vs Q4 中性预测，降 ${(100-Q4avg/H1avg*100).toFixed(0)}%`},
+  ];
+  $('#verdict').innerHTML = cards.map(c=>`<div class="vc ${c.cls}"><div class="lab">${c.lab}</div>
+    <div class="val">${c.val}<span class="u">${c.unit}</span></div><div class="sub">${c.sub}</div></div>`).join('');
+
+  const q1_26 = P.actual.slice(0,3).reduce((a,b)=>a+b.revenue,0);
+  $('#fcNote').innerHTML = `「较 9 月」以 2026 年 9 月 ${f0(P.actual[8].revenue)} 万为基准——那是最后一个数据完整的正常月份。
+    读法：<b>中性情景的 11 月 ${f0(nov.中性.revenue)} 万，比 9 月的 701 万少了一半还多</b>，
+    因为客场约见从 61 场降到 45.5 场、成交率从 73.8% 降到 ${P.per_neutral.rk}%。两者同时发生，乘起来就是腰斩。
+    悲观情景假设 10 月的低成交率是真实的并延续，乐观情景假设它主要是录入截断。`;
+  $('#sensNote').innerHTML = `三个变量对 11 月业绩的弹性几乎一样（±10% 各带来 ±38.5 万），
+    说明<b>没有哪个"抓手"能单独救回来</b>：约见量与单均合同各 ±38.5 万、成交率 ±33.8 万，量级接近。
+    非新接系数影响更小（±17 万），因为它只占 16.5%。
+    <b>真正的杠杆只有一个：客场约见量。</b>`;
+  $('#backNote').innerHTML = `回测误差<b>全部为正</b>（预测高于实际），7 月做原点预测 9 月客场约见时高估了 20 场。
+    这说明<b>趋势外推在拐点处系统性偏乐观</b>——所以本报告的悲观情景不是"吓人"，而是回测误差的方向所指。`;
+
+  const ns = P.rev_mon.slice(0,9);
+  const newSum = ns.reduce((a,b)=>a+b['新接'],0);
+  const allSum = ns.reduce((a,b)=>a+b['新接']+b['新增户']+b['中期尾款']+b['其他'],0);
+  $('#newShare').textContent = (newSum/allSum*100).toFixed(1);
+  $('#resShare').textContent = (100-newSum/allSum*100).toFixed(1);
+  $('#mCut').textContent = P.meta.cut;
+  $('#octFull').textContent = f0(P.meta.oct_full);
+  $('#octRec').textContent = f0(P.meta.oct_recorded);
+  $('#fanNote').textContent = `截止 ${P.meta.cut}`;
+  $('#mxRh').textContent = P.per_neutral.rh;
+  $('#mxAk').textContent = P.params.avg_k;
+  $('#mxAh').textContent = P.params.avg_h;
+  $('#mxRec').textContent = P.meta.rec_rate;
+  $('#mxNn').textContent = P.meta.nonnew;
+  $('#curVal').textContent = f0((53*P.per_neutral.per_k+5*P.per_neutral.per_h)*P.meta.factor);
+})();
+
+// ── 说明区 ──
+(function(){
+  const m = P.meta, p = P.params;
+  const rec = P.rec_ratio.slice(2,9).map(r=>`${r.mon}月 ${r.ratio==null?'—':r.ratio+'%'}`).join(' · ');
+  $('#noteB').innerHTML = `
+    <h4>计算链路（每一层都可单独核）</h4>
+    <div class="flow">
+      <div class="nd"><b>1 约见量</b>客场 ${P.trend['客场'].base} 场<br>趋势 ${P.trend['客场'].slope}/月</div><span class="ar2">×</span>
+      <div class="nd"><b>2 成交率</b>成熟 ${p.rate_k}%<br>× 恢复系数 ${m.rho['中性']}%</div><span class="ar2">×</span>
+      <div class="nd"><b>3 单均合同</b>客场 ${p.avg_k} 万<br>主场 ${p.avg_h} 万</div><span class="ar2">×</span>
+      <div class="nd"><b>4 认款率</b>${m.rec_rate}%</div><span class="ar2">×</span>
+      <div class="nd"><b>5 非新接</b>× ${(1+m.nonnew/100).toFixed(3)}</div>
+    </div>
+
+    <h4>参数来源</h4>
+    <li><b>约见量</b>：取 7–10 月客场（78/86/61/53）与主场（27/17/11/10）做线性拟合，斜率 ${P.trend['客场'].slope} / ${P.trend['主场'].slope} 场每月；
+      向前外推时按 φ=${m.phi} 逐步衰减（越远越不敢外推），并设下限 客场 ${m.floor['客场']} / 主场 ${m.floor['主场']} 场。</li>
+    <li><b>成交率</b>：成熟水平取 5–9 月加权（客场 ${p.rate_k}%、主场 ${p.rate_h}%，区间 ${p.rate_k_range[0]}%–${p.rate_k_range[1]}%）。
+      但 10 月客场实录只有 30.2%，上一轮删失校正给出 <b>${m.oct_ht['低']}% / ${m.oct_ht['中']}% / ${m.oct_ht['高']}%</b>，
+      折算成恢复系数即 <b>${m.rho['悲观']}% / ${m.rho['中性']}% / ${m.rho['乐观']}%</b>——三情景的差别就来自这里。</li>
+    <li><b>单均合同</b>：7–10 月成交加权，客场 ${p.avg_k} 万、主场 ${p.avg_h} 万。10 月实际 9.9 万已在下降通道，故悲观再打 0.92。</li>
+    <li><b>认款率 ${m.rec_rate}%</b>：3–9 月「收入表新接认款 ÷ 订单表当月成交合同额」。月度值 ${rec}，波动来自跨月兑现，故取全期。</li>
+    <li><b>非新接系数 ${m.nonnew}%</b>：1–9 月（新增户＋中期尾款＋其他＋后期效果费＋续约）÷ 新接认款。近 3 个月 ${m.nonnew_recent}%，本模型取保守的 ${m.nonnew}%。</li>
+    <li><b>季节性</b>：2027 年 2 月春节（2/6）约见打 0.85，3 月回补 1.05；1 月不做调整，但<b>不复制 2026 年 1 月的 312 场主场异动</b>。</li>
+
+    <h4>五条假设，以及被推翻的方式</h4>
+    <li><b>① 业绩≈当月新签。</b>实证：新接认款 72–99% 与成交同月。若跨月兑现比例上升，当期业绩会被低估、次月被高估。</li>
+    <li><b>② 成交率停留在 10 月校正水平。</b>这是中性情景最强的假设。若 11 月重导数据后 10 月成交率跳回 70%+，应直接采用乐观情景。</li>
+    <li><b>③ 约见按趋势外推且不再恶化。</b>下限 35 场是人为设定。若线索入库继续下滑（9 月已 6,612 条、较 1 月 −72%），实际会破下限。</li>
+    <li><b>④ 单均合同不崩。</b>10 月客场 9.9 万已是 7 个月最低。若分期政策继续收紧，单均还会往下。</li>
+    <li><b>⑤ 无非经常项。</b>10 月「其他」科目异常偏高（116.5 万，1–9 月合计才 89.4 万），未计入预测；若属一次性收入，不影响后续月份判断。</li>
+
+    <h4>已知局限</h4>
+    <li><b>10 月业绩是不完整月</b>：收入表仅到 10/27，本报告用 ${m.oct_days} 天折算为 ${m.oct_full} 万元（已入账 ${m.oct_recorded} 万元）。这一项占全年 3.6%，折算误差 5% 只影响全年 0.2%。</li>
+    <li><b>回测样本只有 8 个点</b>，且跨越了 8→9 月的结构性拐点，误差方向明确（偏乐观），幅度仅供参考。</li>
+    <li><b>2027 年 1–3 月没有任何业务计划输入</b>，纯趋势外推。一旦 11–12 月投放恢复，应立即用实际数据替换。</li>
+    <li><b>本模型不含退费冲减</b>：退费 965 笔在「给数据组结案/退费/返点」表中，未并入业绩口径，与既有看板保持一致。</li>
+  `;
+  $('#noteH').onclick = () => {
+    const b = $('#noteB'); b.classList.toggle('open');
+    $('#noteC').textContent = b.classList.contains('open') ? '收起' : '展开';
+  };
+})();
+</script>
+
+<style>
+#anon-badge{position:fixed;right:12px;bottom:12px;z-index:99999;font:500 11px/1.6 -apple-system,
+"Segoe UI","Microsoft YaHei",sans-serif;color:#5B6572;background:rgba(255,255,255,.92);
+border:1px solid #E6E8EC;border-radius:999px;padding:3px 10px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+@media print{#anon-badge{display:none}}
+</style>
+<div id="anon-badge">示例数据 · 已脱敏</div>
+</body>
+</html>

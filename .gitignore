@@ -1,0 +1,21 @@
+# 原始数据：绝不入仓
+data/raw/*
+!data/raw/.gitkeep
+
+# 构建中间产物
+build/
+*.log
+monitor_state.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

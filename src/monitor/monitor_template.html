@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>经营监测仪表盘 · 自动更新</title>
+__CSS__
+<style>
+/* ─── 仪表盘专用 ─── */
+.kpi6{grid-template-columns:repeat(6,1fr)}
+@media(max-width:1360px){.kpi6{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:820px){.kpi6{grid-template-columns:repeat(2,1fr)}}
+
+.live{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);
+  border-radius:20px;padding:6px 13px;font-size:11.5px;color:var(--t2);box-shadow:var(--shadow)}
+.live .ld{width:7px;height:7px;border-radius:50%;background:var(--green);flex:0 0 auto;
+  box-shadow:0 0 0 3px rgba(14,159,110,.15);animation:pulse 2.4s infinite}
+.live.off .ld{background:#C0C7D2;box-shadow:none;animation:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+.banner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  background:#fff;border:1px solid var(--line);border-left-width:4px;border-radius:10px;
+  padding:13px 18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.banner.red{border-left-color:var(--red);background:linear-gradient(90deg,#FEF6F5,#fff 40%)}
+.banner.amber{border-left-color:var(--amber);background:linear-gradient(90deg,#FFFBF3,#fff 40%)}
+.banner.green{border-left-color:var(--green);background:linear-gradient(90deg,#F4FBF8,#fff 40%)}
+.banner .bl{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:650;letter-spacing:-.2px}
+.banner .bd{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
+.banner.red .bd{background:var(--red);box-shadow:0 0 0 4px rgba(214,69,69,.14)}
+.banner.amber .bd{background:var(--amber);box-shadow:0 0 0 4px rgba(232,149,42,.14)}
+.banner.green .bd{background:var(--green);box-shadow:0 0 0 4px rgba(14,159,110,.14)}
+.banner .br{font-size:11.5px;color:var(--t3);display:flex;gap:14px;flex-wrap:wrap}
+.banner .br b{color:var(--t2);font-weight:600}
+
+.rp{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);
+  padding:18px 20px 16px;margin-bottom:14px}
+.rp h3{font-size:14px;font-weight:650;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+.rp h3 .no{width:20px;height:20px;border-radius:5px;background:var(--blue);color:#fff;font-size:11px;
+  display:flex;align-items:center;justify-content:center;font-weight:700;flex:0 0 auto}
+.rp .lead{font-size:13px;color:var(--t2);line-height:1.75;margin:8px 0 12px}
+.rp .lead b{color:var(--t1);font-weight:650}
+.rp .note{font-size:11.5px;color:var(--t3);line-height:1.7;margin-top:10px;padding-top:9px;
+  border-top:1px solid var(--line2)}
+.rp .note b{color:var(--t2)}
+.chart-h{font-size:12px;font-weight:600;color:var(--t2);margin:4px 0 2px;display:flex;
+  justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.chart-h .lg{font-weight:400;font-size:11px;color:var(--t3);display:flex;gap:12px;flex-wrap:wrap}
+.chart-h .lg i{width:8px;height:8px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:-1px}
+
+/* 信号灯表 */
+table.dt{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+table.dt th{background:#FAFBFC;text-align:right;padding:8px 10px;font-weight:600;color:var(--t2);
+  border-bottom:1px solid var(--line);font-size:11.5px;white-space:nowrap;cursor:default}
+table.dt th:first-child,table.dt th:nth-child(2){text-align:left}
+table.dt td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line2);vertical-align:middle}
+table.dt td:first-child{text-align:left;font-weight:500;white-space:nowrap}
+table.dt td.l{text-align:left}
+table.dt tbody tr:hover td{background:#FAFBFD}
+.ex{color:#98A1AD;font-size:10.5px;display:inline-block;margin-left:6px;font-weight:400}
+.lamp{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600}
+.lamp i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.lamp.red i{background:var(--red);box-shadow:0 0 0 3px rgba(214,69,69,.12)}
+.lamp.amber i{background:var(--amber);box-shadow:0 0 0 3px rgba(232,149,42,.12)}
+.lamp.green i{background:var(--green);box-shadow:0 0 0 3px rgba(14,159,110,.12)}
+.lamp.gray i{background:#C0C7D2}
+.lamp.red{color:#B4472F}.lamp.amber{color:#9A6516}.lamp.green{color:#0E7A5F}.lamp.gray{color:#8C96A3}
+tr.row-red td{background:#FEFAF9}
+tr.row-red:hover td{background:#FDF5F3}
+
+/* 进度条 */
+.pg{margin:20px 0 4px;padding-top:14px}
+.pg .pt{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;
+  margin-bottom:6px;color:var(--t2)}
+.pg .pt b{color:var(--t1);font-size:13px;font-weight:650}
+.pg .track{position:relative;height:26px;background:#F2F4F8;border-radius:6px}
+.pg .fill{position:absolute;left:0;top:0;bottom:0;border-radius:6px 0 0 6px;
+  background:linear-gradient(90deg,#2F5BEA,#5C82F0);transition:width .5s}
+.pg .fill.i2{background:linear-gradient(90deg,#7C5CD6,#9B80E4)}
+.pg .proj{position:absolute;top:0;bottom:0;background:rgba(47,91,234,.16);
+  border-right:1px dashed rgba(47,91,234,.5)}
+.pg .tmark{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--t1);opacity:.6}
+.pg .tmark span{position:absolute;top:50%;left:7px;transform:translateY(-50%);
+  font-size:10px;color:var(--t2);white-space:nowrap;background:rgba(255,255,255,.88);
+  padding:1px 4px;border-radius:3px;z-index:3;font-weight:500}
+.pg .row2{display:flex;gap:20px;font-size:11.5px;color:var(--t3);margin-top:7px;flex-wrap:wrap}
+.pg .row2 b{color:var(--t2);font-weight:600}
+
+/* 动作 */
+.act{display:grid;gap:8px}
+.act .it{display:flex;gap:10px;align-items:flex-start;padding:10px 13px;border-radius:8px;
+  border:1px solid var(--line2);font-size:12.5px;line-height:1.65;color:var(--t2)}
+.act .it.red{background:#FEF8F7;border-color:#F5DAD5}
+.act .it.amber{background:#FFFCF5;border-color:#F7E8CB}
+.act .it.info{background:#F8FAFD;border-color:#E6ECF7}
+.act .it.green{background:#F6FCF9;border-color:#D8EFE5}
+.act .it .k{flex:0 0 auto;font-weight:650;color:var(--t1);min-width:132px}
+.act .it .lv{flex:0 0 auto;font-size:10.5px;font-weight:700;border-radius:4px;padding:1px 6px;
+  line-height:1.7;height:fit-content;margin-top:1px}
+.act .it.red .lv{background:#FBE3DE;color:#B4472F}
+.act .it.amber .lv{background:#FBEED6;color:#9A6516}
+.act .it.info .lv{background:#E7EDF9;color:#3C5795}
+.act .it.green .lv{background:#DEF2E9;color:#0E7A5F}
+
+/* 漏斗 */
+.fn{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:900px){.fn{grid-template-columns:1fr}}
+.fn .cell{border:1px solid var(--line2);border-radius:10px;padding:13px 15px}
+.fn .cell .h{font-size:11.5px;color:var(--t3);margin-bottom:8px}
+.fn .cell .v{font-size:22px;font-weight:650;letter-spacing:-.6px;font-variant-numeric:tabular-nums}
+.fn .cell .v small{font-size:11.5px;font-weight:500;color:var(--t2);margin-left:3px;letter-spacing:0}
+.fn .cell .d{font-size:11.5px;color:var(--t3);margin-top:6px}
+.fn .cell .d b{font-weight:600}
+
+/* 折叠说明 */
+.notes{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);
+  padding:15px 20px;margin-bottom:14px}
+.notes .nh{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.notes .nh .t{font-size:13px;font-weight:650}
+.notes .nh .c{font-size:11.5px;color:var(--blue)}
+.notes .nb{display:none;margin-top:12px;font-size:12px;color:var(--t2);line-height:1.85}
+.notes .nb.open{display:block}
+.notes .nb h4{font-size:12px;font-weight:650;color:var(--t1);margin:12px 0 5px}
+.notes .nb h4:first-child{margin-top:0}
+.notes .nb li{margin-left:16px;margin-bottom:4px}
+.notes .nb b{color:var(--t1)}
+table.src{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:6px}
+table.src td{padding:5px 8px;border-bottom:1px solid var(--line2);color:var(--t2)}
+table.src td:first-child{font-weight:500;color:var(--t1)}
+table.src td:last-child{text-align:right;color:var(--t3);font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1><span class="dot"></span>经营监测仪表盘</h1>
+    <div class="sub">
+      <span>数据截止 <b id="mCut">—</b></span>
+      <span>生成时间 <b id="mGen">—</b></span>
+      <span>口径 <b>一个主指标 + 两个护栏</b></span>
+      <span>周期 <b>工作日 10:00 自动重算</b></span>
+    </div>
+  </div>
+  <div class="live" id="liveBox"><span class="ld"></span><span id="liveTxt">自动检测中</span></div>
+</header>
+
+<div class="banner" id="banner">
+  <div class="bl"><span class="bd"></span><span id="bTitle">—</span></div>
+  <div class="br" id="bMeta"></div>
+</div>
+
+<div class="summary">
+  <div class="sh"><span class="t">今日结论</span><span class="s" id="sumS"></span></div>
+  <ol id="sumList"></ol>
+</div>
+
+<div class="grid kpi6" id="kpiGrid"></div>
+
+<div class="rp">
+  <h3><span class="no">1</span>监测信号灯</h3>
+  <div class="lead" id="lead1"></div>
+  <table class="dt" id="tbSig"></table>
+  <div class="note" id="noteSig"></div>
+</div>
+
+<div class="rp">
+  <h3><span class="no">2</span>本月进度：600 万底线 / 874 万理想线</h3>
+  <div class="lead" id="lead2"></div>
+  <div id="progBox"></div>
+</div>
+
+<div class="rp">
+  <h3><span class="no">3</span>月度趋势与预测对照</h3>
+  <div class="chart-h"><span>月度业绩（柱）与客场约见量（线）</span>
+    <div class="lg">
+      <span><i style="background:#2F5BEA"></i>已入账</span>
+      <span><i style="background:#B9C6E8"></i>未完整月</span>
+      <span><i style="background:#DDE4F5"></i>预测（中性）</span>
+      <span><i style="background:#0FA3A3;border-radius:50%"></i>客场约见</span>
+    </div>
+  </div>
+  <div id="chA"></div>
+  <div class="chart-h" style="margin-top:16px"><span>11 月 – 2027 年 3 月 三情景预测（万元）</span></div>
+  <table class="dt" id="tbFc"></table>
+  <div class="note" id="noteA"></div>
+</div>
+
+<div class="rp">
+  <h3><span class="no">4</span>周粒度预警：客场约见</h3>
+  <div class="lead" id="lead4"></div>
+  <div class="chart-h"><span>近 14 周客场约见（柱）与 4 周移动平均（线）</span>
+    <div class="lg">
+      <span><i style="background:#0FA3A3"></i>周场次</span>
+      <span><i style="background:#E8952A;border-radius:50%"></i>4 周均</span>
+      <span id="lgH"><i style="background:#D64545;border-radius:0"></i>周健康线</span>
+    </div>
+  </div>
+  <div id="chW"></div>
+  <div class="note" id="noteW"></div>
+</div>
+
+<div class="rp">
+  <h3><span class="no">5</span>本月漏斗 vs 上月</h3>
+  <div class="lead" id="lead5"></div>
+  <div class="fn" id="funnel"></div>
+</div>
+
+<div class="rp">
+  <h3><span class="no">6</span>按灯处置</h3>
+  <div class="act" id="actList"></div>
+</div>
+
+<div class="notes">
+  <div class="nh" onclick="document.getElementById('nB').classList.toggle('open');
+       document.getElementById('nC').textContent=document.getElementById('nB').classList.contains('open')?'收起':'展开'">
+    <span class="t">口径、算法与数据源</span>
+    <span class="c" id="nC">展开</span>
+  </div>
+  <div class="nb" id="nB"></div>
+</div>
+
+</div>
+
+<script>window.__MON__ = __PAYLOAD__;</script>
+<script>
+/* ═══════════════════════════════════════════════════
+   渲染
+   ═══════════════════════════════════════════════════ */
+const $=s=>document.querySelector(s);
+const C={blue:'#2F5BEA',teal:'#0FA3A3',amber:'#E8952A',red:'#D64545',
+         green:'#0E9F6E',violet:'#7C5CD6',grey:'#98A1AD'};
+const nf=(v,d=0)=>v==null||isNaN(v)?'—':Number(v).toLocaleString('zh-CN',
+  {minimumFractionDigits:d,maximumFractionDigits:d});
+const w0=v=>nf(v,0), w1=v=>nf(v,1);
+const LV={red:'红',amber:'黄',green:'绿',gray:'—'};
+
+let RENDERED=null;
+
+function render(P){
+  RENDERED=P.meta.generated_at;
+  initHead(P); initBanner(P); initSummary(P); initKPI(P);
+  initSig(P); initProg(P); initTrend(P); initWeek(P);
+  initFunnel(P); initAct(P); initNotes(P);
+}
+
+/* ── 头部 ── */
+function initHead(P){
+  const m=P.meta;
+  $('#mCut').textContent=m.cut;
+  $('#mGen').textContent=m.generated_at;
+  // 数据陈旧提醒：源表没更新时页面会一直显示旧数字
+  const d0=new Date(m.cut+'T00:00:00'), now=new Date();
+  const stale=Math.floor((now-d0)/86400000);
+  const box=$('#liveBox');
+  if(stale>=3){
+    box.classList.add('off');
+    $('#liveTxt').innerHTML=`<b style="color:#B4472F">数据已 ${stale} 天未更新</b> · 请检查源表`;
+  }
+}
+function initBanner(P){
+  const b=$('#banner');
+  b.className='banner '+(P.overall==='red'?'red':P.overall==='amber'?'amber':'green');
+  const cnt={red:0,amber:0,green:0,gray:0};
+  P.sig.forEach(s=>cnt[s.level]=(cnt[s.level]||0)+1);
+  const reds=P.sig.filter(s=>s.level==='red').map(s=>s.name);
+  const ambers=P.sig.filter(s=>s.level==='amber').map(s=>s.name);
+  let t='';
+  if(P.overall==='red') t=`${reds.length} 项触红：${reds.join('、')}`;
+  else if(P.overall==='amber') t=`无红灯，${ambers.length} 项黄灯：${ambers.join('、')}`;
+  else t='全部指标在健康区间';
+  $('#bTitle').textContent=t;
+  const m=P.meta, mt=P.mtd;
+  $('#bMeta').innerHTML=
+    `<span>数据截止 <b>${m.cut}</b></span>`+
+    `<span>红 <b style="color:#B4472F">${cnt.red}</b> · 黄 <b style="color:#9A6516">${cnt.amber||0}</b> · 绿 <b style="color:#0E7A5F">${cnt.green||0}</b></span>`+
+    `<span>剩余工作日 <b>${m.left_biz}</b> 天</span>`;
+}
+function initSummary(P){
+  $('#sumList').innerHTML=P.summary.map((t,i)=>
+    `<li><span class="n">${i+1}</span><div>${t}</div></li>`).join('');
+  const m=P.meta;
+  $('#sumS').textContent=`数据截止 ${m.cut} · 生成于 ${m.generated_at}`;
+}
+
+/* ── KPI ── */
+function initKPI(P){
+  const m=P.meta, mt=P.mtd, y=P.ytd, T=m.targets, R=m.thr;
+  const achProj=mt.rev_proj?mt.rev_proj/T.floor*100:null;
+  const achIdeal=mt.rev_proj?mt.rev_proj/T.ideal*100:null;
+  const cards=[
+    {lab:'本月业绩（已入账）',val:w0(mt.rev),unit:'万元',color:C.blue,
+     foot:mt.rev_proj?`折算全月 <b>${w0(mt.rev_proj)}</b> 万 · 同进度完成 ${(mt.rho_rev*100).toFixed(0)}%`
+                     :`时间已过 ${m.time_pct}% · 月初暂不折算`},
+    {lab:'600 万底线（预计）',val:achProj!=null?w1(achProj):w1(mt.rev/T.floor*100),unit:'%',color:C.red,
+     foot:`理想线 ${w1(achIdeal!=null?achIdeal:mt.rev/T.ideal*100)}% · 时间进度 ${w1(m.time_pct)}%`},
+    {lab:'客场约见（折算）',val:mt.meet_k_proj!=null?w0(mt.meet_k_proj):String(mt.meet_k),
+     unit:'场',color:C.teal,
+     foot:`已发生 <b>${mt.meet_k}</b> 场 · 预警 ${R.meet_warn} / 健康 ${R.meet_ok}`},
+    {lab:'约见成交率（校正）',val:mt.rate!=null?w1(mt.rate):'—',unit:'%',color:C.violet,
+     foot:`原始 ${mt.rate_raw!=null?w1(mt.rate_raw):'—'}%（未成熟）· 预警 ${R.rate_warn}%`},
+    {lab:'退费率',val:mt.refund_rate!=null?w1(mt.refund_rate):'—',unit:'%',color:C.amber,
+     foot:mt.refund_rate!=null?`警戒 ${R.refund_warn}% / 红线 ${R.refund_red}%`
+                              :`台账未覆盖本月，9 月为 ${w1(lastRefund(P))}%`},
+    {lab:'全年累计（YTD）',val:w0(y.rev),unit:'万元',color:C.green,
+     foot:`中性预测 ${w0(y.annual_target)} 万 · 进度 ${w1(y.rev/y.annual_target*100)}%（时间 ${w1(y.ytime_pct)}%）`},
+  ];
+  $('#kpiGrid').innerHTML=cards.map(k=>`
+    <div class="card kpi">
+      <div class="lab"><i style="background:${k.color}"></i>${k.lab}</div>
+      <div class="valrow"><div class="val">${k.val}<small>${k.unit}</small></div></div>
+      <div class="foot">${k.foot}</div>
+    </div>`).join('');
+}
+function lastRefund(P){
+  const a=P.month.filter(x=>x.refund_rate!=null);
+  return a.length?a[a.length-1].refund_rate:null;
+}
+
+/* ── 信号灯表 ── */
+function initSig(P){
+  const rows=P.sig;
+  let t=`<thead><tr><th>层级</th><th>指标</th><th>当前值</th><th>阈值</th>
+         <th>状态</th><th style="text-align:left">处置动作</th></tr></thead><tbody>`;
+  rows.forEach(s=>{
+    let val=s.val==null?'—':(s.key==='meet_k'?w0(s.val):w1(s.val));
+    let extra='';
+    if(s.key==='rate'&&s.raw!=null) extra=`<span class="ex">原始 ${w1(s.raw)}%</span>`;
+    if(s.key==='per_k'){
+      const mm=(s.note||'').match(/(\d+)\s*月/);
+      extra=`<span class="ex">${mm?mm[1]+' 月完整':'上月'}｜本月 ${w1(s.now)}</span>`;
+    }
+    if(s.key==='ach'&&s.now!=null) extra=`<span class="ex">已入账 ${w1(s.now)}%</span>`;
+    t+=`<tr class="${s.level==='red'?'row-red':''}">
+      <td>${s.layer}</td><td>${s.name}</td>
+      <td><b>${val}</b>${extra}</td>
+      <td style="color:#5B6572">${s.thr}</td>
+      <td><span class="lamp ${s.level}"><i></i>${LV[s.level]}</span></td>
+      <td class="l">${s.act}</td></tr>`;
+  });
+  t+='</tbody>';
+  $('#tbSig').innerHTML=t;
+  $('#lead1').innerHTML=`灯是按<b>处置方式</b>分的，不是按严重程度：<b>红</b>＝必须今天动，`+
+    `<b>黄</b>＝本周内处理，<b>绿</b>＝维持，<b>—</b>＝数据还没到（不代表没问题）。`+
+    `当月指标一律用成熟度校正值判定，原始比率在当月天然偏低，直接比阈值会天天误报。`;
+  const R=P.meta.thr;
+  $('#noteSig').innerHTML=`主指标 <b>客场约见量</b>（≥${R.meet_ok} 场健康、<${R.meet_warn} 场预警）；`+
+    `护栏 <b>约见成交率</b>（<${R.rate_warn}% 说明是质的问题，加投放没用）、`+
+    `<b>退费率</b>（>${R.refund_warn}% 警戒、>${R.refund_red}% 红线，一旦破线量价结论要推翻）。`+
+    `参考项 <b>客场单场产出</b>（<${R.per_warn} 万元/场 说明价补不动量）与两条进度线。`;
+}
+
+/* ── 进度条 ── */
+function initProg(P){
+  const m=P.meta, mt=P.mtd, T=m.targets;
+  const mk=(lab,cur,tgt,cls,proj)=>{ 
+    const p=Math.max(0,Math.min(cur/tgt*100,100));
+    const pj=proj?Math.max(0,Math.min(proj/tgt*100,100)):null;
+    return `<div class="pg">
+      <div class="pt"><span>${lab}　<b>${w0(cur)}</b> / ${w0(tgt)} 万元</span>
+        <span>已入账 <b>${w1(cur/tgt*100)}%</b>${proj?`　预计 <b>${w1(proj/tgt*100)}%</b>`:''}</span></div>
+      <div class="track">
+        ${pj!=null?`<div class="proj" style="left:${p}%;width:${Math.max(pj-p,0)}%"></div>`:''}
+        <div class="fill ${cls}" style="width:${p}%"></div>
+        <div class="tmark" style="left:${m.time_pct}%"><span>时间 ${w0(m.time_pct)}%</span></div>
+      </div>
+    </div>`;
+  };
+  $('#progBox').innerHTML=
+    mk('底线目标 600 万',mt.rev,T.floor,'',mt.rev_proj)+
+    mk('理想目标 874 万',mt.rev,T.ideal,'i2',mt.rev_proj)+
+    `<div class="pg"><div class="row2">
+      <span>本月剩 <b>${m.left_days}</b> 天 / <b>${m.left_biz}</b> 个工作日</span>
+      <span>折算方法：历史同进度曲线，第 ${m.day_n} 天平均完成 <b>${w1((mt.rho_rev||0)*100)}%</b></span>
+      <span>线性折算参考 <b>${w0(mt.rev_linear)}</b> 万</span>
+    </div></div>`;
+  const gap=T.floor-mt.rev;
+  $('#lead2').innerHTML=`两条线同时看才能判断严重程度：<b>600 万</b>是不能再退的底线，`+
+    `<b>874 万</b>是全年中性预测摊到每月的水平。竖线是<b>时间进度</b>——业绩进度跑到竖线左边，`+
+    `说明这个月的钱还没挣够。`+
+    (gap>0?` 当前距 600 万还差 <b>${w0(gap)} 万</b>。`:` 已越过 600 万底线。`);
+}
+
+/* ── 月度趋势 ── */
+function initTrend(P){
+  const M=P.month, FC=P.fc_neutral||{};
+  const rows=[];
+  for(let i=0;i<12;i++){
+    const m=M.find(x=>x.mon===i+1);
+    const key=`2026-${String(i+1).padStart(2,'0')}`;
+    if(m) rows.push({lab:`${i+1}月`,rev:m.rev,meet_k:m.meet_k,complete:m.complete,fc:false,mon:i+1});
+    else if(FC[key]) rows.push({lab:`${i+1}月`,rev:FC[key],meet_k:null,complete:false,fc:true,mon:i+1});
+    else rows.push({lab:`${i+1}月`,rev:0,meet_k:null,complete:false,fc:true,mon:i+1});
+  }
+  const W=1020,H=310,pl=54,pr=54,pt=20,pb=38, iw=W-pl-pr, ih=H-pt-pb;
+  const niceMax=v=>{const p=Math.pow(10,Math.floor(Math.log10(v)));
+    const n=[1,1.1,1.2,1.4,1.5,1.6,1.8,2,2.2,2.5,3,3.5,4,5,6,8,10].find(k=>k*p>=v)||10; return n*p;};
+  const maxR=niceMax(Math.max(...rows.map(r=>r.rev))*1.05);
+  const maxM=niceMax(Math.max(60,...rows.filter(r=>r.meet_k!=null).map(r=>r.meet_k)));
+  const yR=v=>pt+ih-v/maxR*ih, yM=v=>pt+ih-v/maxM*ih;
+  const step=iw/rows.length, bw=Math.min(46,step*0.46), cx=i=>pl+step*(i+0.5);
+  let s='';
+  for(let i=0;i<=4;i++){
+    const v=maxR/4*i, yy=yR(v);
+    s+=`<line class="gridline" x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}"/>`;
+    s+=`<text class="tick" x="${pl-8}" y="${yy+3.5}" text-anchor="end">${w0(v)}</text>`;
+    s+=`<text class="tick" x="${W-pr+8}" y="${yy+3.5}" text-anchor="start">${w0(maxM/4*i)}</text>`;
+  }
+  let sBar='',sVal='';
+  rows.forEach((d,i)=>{
+    s+=`<text class="tick" x="${cx(i)}" y="${H-14}" text-anchor="middle" ${d.fc?'fill="#B4BCC7"':''}>${d.lab}</text>`;
+    if(d.rev<=0) return;
+    const h=Math.max(1, pt+ih-yR(d.rev));
+    const col=d.fc?'#DDE4F5':(d.complete?C.blue:'#B9C6E8');
+    const stroke=d.fc?'#C4D2FA':'none';
+    sBar+=`<rect x="${cx(i)-bw/2}" y="${yR(d.rev)}" width="${bw}" height="${h}" fill="${col}"`+
+       ` stroke="${stroke}" stroke-dasharray="${d.fc?'4 3':'0'}" rx="3">`+
+       `<title>${d.lab}${d.fc?'（预测中性）':'（实际）'}\n业绩 ${w0(d.rev)} 万元`+
+       `${d.meet_k!=null?`\n客场约见 ${d.meet_k} 场`:''}</title></rect>`;
+    sVal+=`<text x="${cx(i)}" y="${yR(d.rev)-6}" text-anchor="middle" font-size="10"`+
+       ` font-weight="600" fill="${d.fc?'#8C96A3':'#3A4553'}" stroke="#fff" stroke-width="3.2"`+
+       ` paint-order="stroke" stroke-linejoin="round">${w0(d.rev)}</text>`;
+  });
+  // 客场约见线
+  let pts=[],ptsF=[];
+  rows.forEach((d,i)=>{
+    if(d.meet_k!=null) pts.push([cx(i),yM(d.meet_k)]);
+    else if(d.fc){
+      const r=(P.fc||[]).find(x=>x.ym===`2026-${String(d.mon).padStart(2,'0')}`&&x.scen==='中性');
+      if(r&&r.meet_k!=null) ptsF.push([cx(i),yM(r.meet_k)]);
+    }
+  });
+  let sLine='';
+  if(pts.length>1)
+    sLine+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${C.teal}"`+
+       ` stroke-width="2.2" stroke-linejoin="round"/>`;
+  if(pts.length&&ptsF.length)
+    sLine+=`<polyline points="${[pts[pts.length-1],...ptsF].map(p=>p.join(',')).join(' ')}" fill="none"`+
+       ` stroke="${C.teal}" stroke-width="2" stroke-dasharray="5 4" opacity=".55"/>`;
+  const ptsRows=rows.filter(r=>r.meet_k!=null);
+  pts.forEach((p,k)=>{
+    const d=ptsRows[k];
+    sLine+=`<circle cx="${p[0]}" cy="${p[1]}" r="3.2" fill="#fff" stroke="${C.teal}" stroke-width="2">`+
+       `<title>${d.lab} 客场约见 ${d.meet_k} 场</title></circle>`;
+  });
+  s+=sBar+sLine+sVal;
+  s+=`<text x="${pl}" y="${pt-6}" font-size="10" fill="#98A1AD">左轴 业绩（万元）</text>`;
+  s+=`<text x="${W-pr}" y="${pt-6}" font-size="10" fill="#98A1AD" text-anchor="end">右轴 客场约见（场）</text>`;
+  $('#chA').innerHTML=`<svg viewBox="0 0 ${W} ${H}">${s}</svg>`;
+
+  // 预测表
+  const sc=['悲观','中性','乐观'];
+  const yms=[...new Set((P.fc||[]).map(r=>r.ym))].sort().slice(0,5);
+  if(yms.length){
+    let t=`<thead><tr><th>月份</th>${sc.map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody>`;
+    yms.forEach(ym=>{
+      t+=`<tr><td>${ym.replace('2026-','2026 年 ').replace('2027-','2027 年 ')} 月</td>`;
+      sc.forEach(k=>{
+        const r=(P.fc||[]).find(x=>x.ym===ym&&x.scen===k);
+        t+=`<td>${r?w0(r.rev):'—'}</td>`;
+      });
+      t+='</tr>';
+    });
+    t+='</tbody>';
+    $('#tbFc').innerHTML=t;
+    $('#tbFc').style.maxWidth='600px';
+  } else $('#tbFc').innerHTML='';
+  const last=M[M.length-1];
+  $('#noteA').innerHTML=`柱是收入表「业绩金额」按月汇总，线是订单表按约见时间计数的客场场次（右轴）。`+
+    `10 月未完整，按历史同进度折算 ${w0(P.mtd.rev_proj||0)} 万。11–12 月为《2026-2027 业绩预测》中性情景，`+
+    `仅作参照，不随源表更新——源表更新后需重跑预测脚本才能刷新。`;
+}
+
+/* ── 周粒度 ── */
+function initWeek(P){
+  const W=P.weeks||[], S=P.wk_stats||{};
+  if(!W.length){$('#chW').innerHTML='<div style="color:#98A1AD;font-size:12px;padding:20px 0">暂无周数据</div>';
+    $('#lead4').textContent='';return;}
+  const WD=1020,HT=260,pl=44,pr=20,pt=18,pb=52, iw=WD-pl-pr, ih=HT-pt-pb;
+  const maxV=Math.max(20,...W.map(w=>w.meet))*1.15;
+  const y=v=>pt+ih-v/maxV*ih;
+  const step=iw/W.length, bw=Math.min(34,step*0.5), cx=i=>pl+step*(i+0.5);
+  let s='';
+  for(let i=0;i<=4;i++){
+    const v=maxV/4*i, yy=y(v);
+    s+=`<line class="gridline" x1="${pl}" x2="${WD-pr}" y1="${yy}" y2="${yy}"/>`;
+    s+=`<text class="tick" x="${pl-8}" y="${yy+3.5}" text-anchor="end">${w0(v)}</text>`;
+  }
+  // 健康线：月 70 场 ÷ 4.33 周
+  const healthyPl=70/4.33, yh=y(healthyPl);
+  s+=`<line x1="${pl}" x2="${WD-pr}" y1="${yh}" y2="${yh}" stroke="${C.red}" stroke-width="1.4"`+
+     ` stroke-dasharray="5 4" opacity=".7"><title>周健康线 ${w1(healthyPl)} 场（对应月 ${70} 场）</title></line>`;
+  W.forEach((d,i)=>{
+    const h=Math.max(1,pt+ih-y(d.meet));
+    const col=d.partial?'#BFE4E4':C.teal;
+    s+=`<rect x="${cx(i)-bw/2}" y="${y(d.meet)}" width="${bw}" height="${h}" fill="${col}" rx="3">`+
+       `<title>${d.wk} 周${d.partial?'（未走完）':''}\n客场约见 ${d.meet} 场`+
+       `${d.rate!=null?`\n原始成交率 ${w1(d.rate)}%`:''}</title></rect>`;
+    s+=`<text class="tick" x="${cx(i)}" y="${y(d.meet)-5}" text-anchor="middle" font-size="9.5">${d.meet}</text>`;
+    s+=`<text class="tick" x="${cx(i)}" y="${HT-30}" text-anchor="middle" font-size="9">${d.wk}</text>`;
+  });
+  // 4 周 MA
+  let ma=[];
+  W.forEach((d,i)=>{
+    if(i<3||d.partial) return;
+    const win=W.slice(i-3,i+1);
+    ma.push([cx(i), y(win.reduce((a,b)=>a+b.meet,0)/4)]);
+  });
+  if(ma.length>1)
+    s+=`<polyline points="${ma.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${C.amber}"`+
+       ` stroke-width="2.2" stroke-linejoin="round"/>`;
+  ma.forEach(p=>{s+=`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#fff" stroke="${C.amber}" stroke-width="2"/>`;});
+  s+=`<text x="${pl}" y="${HT-10}" font-size="9.5" fill="#B4BCC7">周一起算；浅色柱为本周未走完</text>`;
+  $('#chW').innerHTML=`<svg viewBox="0 0 ${WD} ${HT}">${s}</svg>`;
+  $('#lgH').innerHTML=`<i style="background:${C.red};border-radius:0"></i>周健康线 ${w1(healthyPl)} 场`;
+
+  const l4=S.last4, p4=S.prev4, cur=S.cur;
+  const chg=(l4!=null&&p4)?(l4/p4-1)*100:null;
+  $('#lead4').innerHTML=`月度指标要到月底才看得清，<b>周场次是唯一能提前 2–3 周预警的口径</b>。`+
+    (l4!=null?`近 4 个完整周客场周均 <b>${w1(l4)} 场</b>`:'')+
+    (chg!=null?`，前 4 周 <b>${w1(p4)} 场</b>，变化 <b style="color:${chg<0?'#B4472F':'#0E7A5F'}">${chg>0?'+':''}${w1(chg)}%</b>`:'')+
+    `。周均 ${w1(70/4.33)} 场对应月 70 场预警线。`+
+    (cur?`本周（${cur.wk} 起）已 <b>${cur.meet}</b> 场，尚未走完。`:'');
+  $('#noteW').innerHTML=`周口径<b>没有剔除法定节假日</b>，国庆、春节所在周天然偏低，`+
+    `看趋势以 4 周移动平均为准，不要单看一周。周成交率同理受成熟度影响，只作方向参考。`;
+}
+
+/* ── 漏斗 ── */
+function initFunnel(P){
+  const c=P.mtd, p=P.prev;
+  const cell=(lab,v,unit,dlt,inv)=>{
+    let col='#8C96A3', ar='';
+    if(dlt!=null&&isFinite(dlt)){col=(inv?dlt>0:dlt<0)?'#B4472F':'#0E7A5F';
+      ar=(dlt>0?'▲ ':'▼ ')+w1(Math.abs(dlt))+'%';}
+    return `<div class="cell"><div class="h">${lab}</div>
+      <div class="v">${v}<small>${unit}</small></div>
+      <div class="d">${dlt==null?'上月无对比':`较上月 <b style="color:${col}">${ar}</b>`}</div></div>`;
+  };
+  const pc=(a,b)=>b?a/b*100-100:null;
+  $('#funnel').innerHTML=
+    cell('约见场次',c.meet,'场',pc(c.meet,p?p.meet:null))+
+    cell('成交单数',c.deal,'单',pc(c.deal,p?p.deal:null))+
+    cell('合同额',w0(P.month.find(x=>x.mon===P.meta.cur_mon)?.cont||0),'万元',
+         pc(P.month.find(x=>x.mon===P.meta.cur_mon)?.cont,p?p.cont:null));
+  $('#lead5').innerHTML=`本月漏斗还是半成品——<b>约见已经发生完，成交和合同额还在陆续确认</b>，`+
+    `所以和上月直接比必然是负的，不能当恶化信号看。这一栏的意义是看<b>约见到成交的转化节奏</b>，`+
+    `即校正成交率；绝对量要到次月初才定型。`;
+}
+
+/* ── 动作 ── */
+function initAct(P){
+  const a=P.actions||[];
+  $('#actList').innerHTML=a.map(x=>`
+    <div class="it ${x.level}">
+      <span class="lv">${x.level==='red'?'立即':x.level==='amber'?'本周':x.level==='info'?'参考':'维持'}</span>
+      <span class="k">${x.name}</span>
+      <span>${x.act}</span>
+    </div>`).join('');
+}
+
+/* ── 说明 ── */
+function initNotes(P){
+  const m=P.meta;
+  $('#nB').innerHTML=`
+    <h4>口径定义（与《业绩下滑归因与监测方案》《2026-2027 业绩预测》一致）</h4>
+    <li><b>业绩</b>＝收入表「业绩金额」按 sheet 月份汇总，含新接、中期尾款等全部款项。</li>
+    <li><b>约见场次</b>＝订单表中有「约见时间」的记录数，按约见时间归月；约见类型含"主场"归主场，其余归客场。</li>
+    <li><b>成交</b>＝「成交时间」非空。<b>合同额</b>＝「合同总金额」按约见月汇总。</li>
+    <li><b>退费率</b>＝退费金额 ÷ 当月业绩，退费取台账列 12＝是/否 的板块，金额取绝对值。</li>
+
+    <h4>当月指标为什么必须校正</h4>
+    <li>当月的约见里，还有大量<b>没来得及成交</b>的场次，直接算「成交单数÷约见场次」必然低估。</li>
+    <li>做法：用已观察 ≥58 天的成熟月（2 月起）估出<b>成交延迟分布 F(t)</b>，再对当月做<b>删失校正</b>（HT 型不动点迭代），得到「最终成交率」的估计。录入滞后按 ${3} 天计。</li>
+    <li>全月业绩/约见的折算，用<b>历史同进度曲线</b>：历史上第 N 天平均完成全月的 ρ(N)，再反推。ρ 低于 55% 时不外推（月初样本太少）。</li>
+
+    <h4>信号灯判定规则</h4>
+    <li><b>红</b>＝当月已破线且需要今天动；<b>黄</b>＝贴近线，本周处理；<b>绿</b>＝健康；<b>—</b>＝数据未到，不是"没问题"。</li>
+    <li>主指标用<b>折算全月</b>的客场约见量判；成交率用<b>校正值</b>判；单场产出、退费率等滞后指标用<b>最近完整月</b>判——这三条是为了避免"每月初必红"的假警报。</li>
+
+    <h4>数据源（自动发现，新增月份文件丢进目录即可）</h4>
+    <table class="src">${(m.sources||[]).map(s=>
+      `<tr><td>${s.name}</td><td>${(s.size/1048576).toFixed(1)} MB</td><td>${s.mtime}</td></tr>`).join('')}</table>
+    <li style="margin-top:8px">订单表按<b>订单编号去重</b>后合并；收入表取目录中<b>最新一份</b>（不累加，避免重复计业绩）；退费台账取最新一份 .xlsx。</li>
+
+    <h4>更新机制</h4>
+    <li>计划任务：<b>工作日 10:00</b> 自动重算，10:20 / 10:40 / 11:00 兜底重试；源文件指纹未变则跳过。</li>
+    <li>手动：双击目录下的<b>更新仪表盘.bat</b>。</li>
+    <li>页面开着时，每 2 分钟自动读取同目录的数据文件，发现新版本立即重绘，不用手动刷新。</li>
+
+    <h4>局限</h4>
+    <li>月度样本 n=8，相关系数只作方向参考。<b>约见量为什么减少（投放、渠道、人力）数据本身无法区分</b>，需要业务侧补充。</li>
+    <li>11 月起的预测值来自此前跑出的模型，<b>不随源表自动滚动</b>；实际数据填进来后如需更新预测，要重跑预测脚本。</li>
+    <li>周口径未剔除法定节假日。`;
+  if(!$('#liveBox').classList.contains('off'))
+    $('#liveTxt').textContent=`自动检测中 · 数据生成于 ${m.generated_at}`;
+}
+
+/* ═══════════════════════════════════════════════════
+   热更新：每 2 分钟尝试读取同目录 data.js
+   ═══════════════════════════════════════════════════ */
+function checkUpdate(){
+  const s=document.createElement('script');
+  s.src='monitor_data.js?_='+Date.now();
+  s.onload=()=>{
+    const ext=window.__MON_EXT__;
+    if(ext&&ext.meta&&ext.meta.generated_at&&ext.meta.generated_at!==RENDERED){
+      render(ext);
+      $('#liveTxt').textContent=`已更新 · ${ext.meta.generated_at}`;
+      document.querySelector('#liveBox').classList.remove('off');
+    }
+    s.remove();
+  };
+  s.onerror=()=>{ s.remove(); };
+  document.head.appendChild(s);
+  const now=new Date();
+  window.__LASTCHECK=now.toTimeString().slice(0,5);
+}
+
+render(window.__MON__);
+setInterval(checkUpdate, 120000);
+setTimeout(checkUpdate, 3000);
+</script>
+</body>
+</html>

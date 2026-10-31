@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>客户支付能力与客单价趋势 · 2026.1–10</title>
+<style>
+:root{
+  --bg:#F5F6F8; --card:#FFF; --line:#E6E8EC; --line2:#EFF1F4;
+  --t1:#141A22; --t2:#5B6572; --t3:#8C96A3;
+  --blue:#2F5BEA; --blue-l:#EAF0FF; --teal:#0FA3A3; --amber:#E8952A;
+  --violet:#7C5CD6; --green:#0E9F6E; --red:#D64545;
+  --shadow:0 1px 2px rgba(20,26,34,.04),0 8px 24px -12px rgba(20,26,34,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t1);
+  font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",system-ui,sans-serif;
+  font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1400px;margin:0 auto;padding:22px 26px 60px}
+
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:14px}
+h1{font-size:21px;font-weight:650;letter-spacing:-.3px;display:flex;align-items:center;gap:10px}
+h1 .dot{width:7px;height:7px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 4px var(--blue-l)}
+.sub{color:var(--t3);font-size:12px;margin-top:5px;display:flex;gap:14px;flex-wrap:wrap}
+.sub b{color:var(--t2);font-weight:500}
+.pill{background:#EEF1F6;border-radius:20px;padding:5px 13px;font-size:11.5px;color:var(--t2)}
+.pill b{color:var(--t1);font-weight:600}
+
+.crumb{display:flex;align-items:center;gap:7px;font-size:12px;margin-bottom:13px;flex-wrap:wrap}
+.crumb .c{color:var(--t3);background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px 10px;cursor:pointer;transition:.14s}
+.crumb .c:hover{border-color:#C4D2FA;color:var(--blue)}
+.crumb .c.on{background:var(--blue-l);border-color:#C4D2FA;color:#2445B8;font-weight:600;cursor:default}
+.crumb .sep{color:#C4CBD6}
+
+.grid{display:grid;gap:13px}
+.k5{grid-template-columns:repeat(5,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.kpi{padding:15px 16px 14px;position:relative}
+.kpi.hl{border-color:#C4D2FA;background:linear-gradient(180deg,#FBFCFE,#fff)}
+.kpi .lab{color:var(--t2);font-size:12px;display:flex;align-items:center;gap:6px;font-weight:500}
+.kpi .lab i{width:2px;height:11px;border-radius:2px;display:inline-block}
+.valrow{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:9px 0 7px}
+.kpi .val{font-size:26px;font-weight:650;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi .val small{font-size:12px;font-weight:500;color:var(--t2);margin-left:3px;letter-spacing:0}
+.kpi .foot{font-size:11.5px;color:var(--t3);line-height:1.55}
+.kpi .nav{position:absolute;right:12px;top:13px;font-size:10.5px;color:var(--blue);background:var(--blue-l);
+  border-radius:5px;padding:2px 6px;cursor:pointer;font-weight:600;opacity:0;transition:.14s}
+.kpi:hover .nav{opacity:1}
+
+h2{font-size:13.5px;font-weight:640;margin:24px 0 11px;display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+h2 span.s{font-size:11.5px;color:var(--t3);font-weight:400}
+h2 .line{flex:1;height:1px;background:var(--line);min-width:20px}
+
+.c2{grid-template-columns:1.35fr 1fr}
+.c2e{grid-template-columns:1fr 1fr}
+.panel{padding:15px 17px 13px;min-width:0}
+.ptitle{font-size:12.5px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.ptitle .legend{display:flex;gap:11px;font-size:11px;color:var(--t2);font-weight:400;flex-wrap:wrap;align-items:center}
+.ptitle .legend i{width:8px;height:8px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:-1px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.tick{font-size:10.5px;fill:#98A1AD;font-family:inherit}
+.gridline{stroke:#F0F2F5;stroke-width:1}
+.bar{transition:opacity .12s;cursor:pointer}
+.bar:hover{opacity:.75}
+.lbl{font-size:10.5px;fill:#5B6572;font-family:inherit;font-weight:500}
+.lbl-w{font-size:10px;fill:#fff;font-family:inherit;font-weight:600}
+
+.seg{display:inline-flex;background:#F2F4F8;border-radius:7px;padding:2px;gap:2px}
+.seg button{border:0;background:none;font:inherit;font-size:11.5px;color:var(--t2);padding:3px 9px;border-radius:5px;cursor:pointer;white-space:nowrap}
+.seg button.on{background:#fff;color:var(--t1);font-weight:600;box-shadow:0 1px 2px rgba(20,26,34,.1)}
+
+.tblwrap{overflow:auto;max-height:420px;border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+thead th{position:sticky;top:0;background:#FAFBFC;z-index:2;text-align:right;padding:8px 11px;
+  font-weight:600;color:var(--t2);border-bottom:1px solid var(--line);white-space:nowrap;font-size:11.5px;cursor:pointer;user-select:none}
+thead th:first-child{text-align:left}
+thead th:hover{color:var(--blue)}
+thead th .ar{opacity:.35;font-size:9px;margin-left:2px}
+tbody td{padding:7px 11px;text-align:right;border-bottom:1px solid var(--line2)}
+tbody td:first-child{text-align:left;font-weight:500}
+tbody tr:hover td{background:#FAFBFD}
+tbody tr.tot td{font-weight:650;background:#FAFBFC;border-top:1px solid var(--line)}
+tbody tr.clickable{cursor:pointer}
+tbody tr.clickable:hover td{background:#F3F6FE}
+tbody tr.dim td{color:var(--t3)}
+td.na{color:#C0C7D2}
+
+.heat{width:100%;border-collapse:separate;border-spacing:3px;font-size:11.5px}
+.heat th{font-weight:600;color:var(--t2);font-size:11px;padding:4px 2px;text-align:center;border:0;background:none;position:static;white-space:nowrap}
+.heat th:first-child{text-align:left;padding-left:8px}
+.heat td{text-align:center;padding:7px 4px;border-radius:5px;border:0;color:#141A22;font-variant-numeric:tabular-nums;cursor:pointer}
+.heat td.nm{text-align:left;font-weight:500;background:none!important;cursor:pointer;padding-left:8px;color:var(--t1)}
+.heat td.nm:hover{color:var(--blue)}
+.heat tr:hover td:not(.nm){outline:1px solid #C4D2FA}
+
+.notes{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:4px 18px 16px}
+.note-h{display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:13px 0}
+.note-h .t{font-size:13px;font-weight:620}
+.note-h .c{font-size:11.5px;color:var(--t3)}
+.note-b{display:none;border-top:1px solid var(--line2);padding-top:14px}
+.note-b.open{display:block}
+.note-b h4{font-size:12px;font-weight:640;margin:14px 0 7px}
+.note-b h4:first-child{margin-top:0}
+.note-b li{font-size:12px;color:var(--t2);line-height:1.8;margin-left:17px}
+.note-b code{background:#F1F3F6;padding:1px 5px;border-radius:4px;font-size:11px;
+  font-family:"SF Mono",Consolas,monospace;color:#3C5795}
+.note-b .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 4px}
+.note-b .nd{background:#F7F9FC;border:1px solid var(--line);border-radius:7px;padding:7px 11px;font-size:11.5px;color:var(--t2);line-height:1.5}
+.note-b .nd b{color:var(--t1);display:block;font-size:11.5px;margin-bottom:1px}
+.note-b .ar2{color:#C4CBD6;font-size:13px}
+
+.tip{position:fixed;pointer-events:none;background:#1B2230;color:#fff;font-size:11.5px;
+  padding:7px 10px;border-radius:6px;opacity:0;transition:opacity .1s;z-index:99;line-height:1.55;white-space:nowrap;
+  box-shadow:0 6px 20px rgba(0,0,0,.22)}
+.tip.on{opacity:1}
+.tip b{color:#9DB6FF}
+
+.alert{background:#FFF8EC;border:1px solid #F5DFB8;border-radius:10px;padding:11px 15px;margin-bottom:15px;display:flex;gap:11px;align-items:flex-start}
+.alert .ico{flex:0 0 auto;width:17px;height:17px;margin-top:1px;color:#C97D12}
+.alert .txt{flex:1;font-size:12.5px;color:#7A5518;line-height:1.65}
+.alert b{color:#5E3F0C}
+.alert .more{background:none;border:0;font:inherit;font-size:11.5px;color:#8A6118;text-decoration:underline;cursor:pointer;padding:0;margin-top:5px}
+.alert .detail{display:none;margin-top:8px;padding-top:8px;border-top:1px dashed #E8D5B0;font-size:11.5px;line-height:1.75}
+.alert .detail.open{display:block;max-height:250px;overflow:auto;padding-right:6px}
+.alert .detail div{margin-bottom:4px}
+.alert .detail em{font-style:normal;color:#A5761C;font-weight:600;margin-right:4px}
+
+@media(max-width:1280px){.k5{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:1180px){.c2,.c2e{grid-template-columns:1fr}}
+@media(max-width:760px){.k5{grid-template-columns:repeat(2,1fr)}.wrap{padding:16px 14px 40px}}
+@media(max-width:520px){.k5{grid-template-columns:1fr}}
+
+/* ── 结论条 ── */
+.summary{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);
+  padding:17px 20px 15px;margin-bottom:15px}
+.summary .sh{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:11px}
+.summary .sh .t{font-size:13.5px;font-weight:650;letter-spacing:-.2px}
+.summary .sh .s{font-size:11.5px;color:var(--t3)}
+.summary ol{list-style:none;display:grid;gap:9px}
+.summary li{display:flex;gap:9px;font-size:12.5px;line-height:1.72;color:var(--t2)}
+.summary li .n{flex:0 0 auto;width:16px;height:16px;border-radius:4px;background:var(--blue-l);color:#2445B8;
+  font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:3px}
+.summary li b{color:var(--t1);font-weight:650}
+.summary li .hi{color:#B4472F;font-weight:650}
+.summary li .lo{color:#0E7A5F;font-weight:650}
+.summary .foot{margin-top:12px;padding-top:10px;border-top:1px solid var(--line2);
+  font-size:11px;color:var(--t3);display:flex;gap:16px;flex-wrap:wrap}
+
+/* ── 打印 / PDF ── */
+@media print{
+  @page{size:1069px 748px;margin:0}
+  body{background:#fff;font-size:11.5px}
+  .wrap{max-width:none;padding:0}
+  .card,.summary{box-shadow:none;border-color:#D8DCE4}
+  .summary,.notes,.alert{break-inside:avoid;page-break-inside:avoid}
+  .card{break-inside:avoid;page-break-inside:avoid}
+  .crumb,.seg,.kpi .nav,.more{display:none!important}
+  h2{margin:5px 0 4px;break-after:avoid;page-break-after:avoid}
+  .tblwrap{max-height:none;overflow:visible;margin-top:6px!important}
+  thead th{position:static;padding:6px 9px}
+  tbody td{padding:4px 9px}
+  .panel{padding:12px 14px 10px}
+  .ptitle{font-size:12px}
+  html,body{width:1068px!important;max-width:1068px!important;overflow-x:hidden}
+  .wrap{width:1068px!important;max-width:1068px!important;padding:0!important}
+  .grid.c2,.grid.c2e{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
+  .k5{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  .grid{min-width:0}
+  .panel,.card{min-width:0!important;max-width:100%}
+  .note-b{display:block!important;padding-top:6px}
+  .note-h .c{display:none}
+  .note-h{padding:8px 0}
+  .alert .detail{display:block!important;max-height:none!important}
+  .alert{padding:8px 12px;margin-bottom:8px}
+  .notes{padding:2px 14px 10px}
+  .note-b h4{margin:6px 0 3px}
+  .note-b li{line-height:1.5}
+  header{margin-bottom:8px}
+  .summary{padding:12px 16px 10px;margin-bottom:10px}
+}
+</style>
+<style>
+/* ── 本页补充 ── */
+.duo{margin-top:9px}
+.duo .row{display:flex;align-items:center;gap:9px;margin-bottom:9px;font-size:12px}
+.duo .row .nm{width:86px;color:var(--t2);flex:0 0 auto;text-align:right}
+.duo .barwrap{flex:1;height:15px;background:#F3F5F9;border-radius:3px;position:relative;overflow:hidden}
+.duo .barwrap i{position:absolute;left:0;top:0;height:100%;border-radius:3px;display:block}
+.duo .v{width:78px;flex:0 0 auto;text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.duo .sub{width:66px;flex:0 0 auto;color:var(--t3);font-size:11px}
+@media print{
+  @page{size:1069px 748px;margin:0}
+  html,body{width:1068px!important;max-width:1068px!important;overflow-x:hidden}
+  .wrap{width:1068px!important;max-width:1068px!important;padding:0!important}
+  .card{break-inside:avoid;page-break-inside:avoid}
+  .summary,.notes,.alert{break-inside:avoid;page-break-inside:avoid}
+  .crumb,.seg,.kpi .nav,.more{display:none!important}
+  h2{margin:6px 0 4px}
+  .tblwrap{max-height:none;overflow:visible}
+  thead th{position:static}
+  .grid.c2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
+  .k5{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  .note-b{display:block!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1><span class="dot"></span>客户支付能力与客单价趋势</h1>
+    <div class="sub">
+      <span>观察期 <b id="mWin"></b></span>
+      <span>数据截至 <b id="mLast"></b></span>
+      <span>口径 <b>订单表 · 按成交时间</b></span>
+      <span>制表 <b id="mGen"></b></span>
+    </div>
+  </div>
+  <div class="pill">金额单位 <b>万元</b></div>
+</header>
+
+<div class="summary">
+  <div class="sh"><span class="t">核心结论</span><span class="s" id="sumScope">2026.1–10 成交 · 全部区域</span></div>
+  <ol id="sumList"></ol>
+  <div class="foot" id="sumFoot"></div>
+</div>
+
+<div class="grid k5" id="kpiGrid"></div>
+
+<h2>客单价 与 首付能力 <span class="s">柱＝合同客单价（万元/单）｜线＝首付比例中位数（右轴）</span><div class="line"></div></h2>
+<div class="grid c2">
+  <div class="card panel">
+    <div class="ptitle"><span>合同客单价 × 首付比例（月度）</span>
+      <div class="legend">
+        <span><i style="background:#2F5BEA"></i>合同客单价</span>
+        <span><i style="background:#E8952A;border-radius:50%"></i>首付比中位</span>
+      </div>
+    </div>
+    <div id="chA"></div>
+  </div>
+  <div class="card panel">
+    <div class="ptitle"><span>合同客单价 vs 实付客单价</span>
+      <div class="legend"><span id="doneNote"></span></div>
+    </div>
+    <div id="chB"></div>
+  </div>
+</div>
+
+<h2>付款能力结构 <span class="s">四档：全款 / 首付≥90% / 首付50–90% / 首付&lt;50%</span><div class="line"></div></h2>
+<div class="grid c2">
+  <div class="card panel">
+    <div class="ptitle"><span>各档单数占比 vs 合同额占比</span>
+      <div class="legend">
+        <span><i style="background:#2F5BEA"></i>单数占比</span>
+        <span><i style="background:#7C5CD6"></i>合同额占比</span>
+      </div>
+    </div>
+    <div id="chC" class="duo"></div>
+    <div id="chCfoot" style="font-size:11px;color:#8C96A3;margin-top:6px;line-height:1.6"></div>
+  </div>
+  <div class="card panel">
+    <div class="ptitle"><span>合同额分档 × 分期率</span>
+      <div class="legend"><span>柱＝分期率｜柱下＝该档单数</span></div>
+    </div>
+    <div id="chD"></div>
+  </div>
+</div>
+
+<h2>分层客单价走势 <span class="s">各付款能力档的合同客单价（万元/单）· 空心点＝该月样本＜5 单</span><div class="line"></div></h2>
+<div class="card panel">
+  <div class="ptitle"><span>客单价（万元/单）</span><div class="legend" id="tierLegend"></div></div>
+  <div id="chE"></div>
+</div>
+
+<h2>支付能力 × 月份 <span class="s">单元格为该档当月合同客单价（万元/单）</span><div class="line"></div></h2>
+<div class="card panel">
+  <div class="ptitle"><span>客单价矩阵</span></div>
+  <div style="overflow:auto;margin-top:8px"><table class="heat" id="heatTbl"></table></div>
+</div>
+
+<h2>明细 <span class="s">金额单位：万元</span><div class="line"></div></h2>
+<div class="grid c2e">
+  <div class="card panel">
+    <div class="ptitle"><span>付款能力档位明细</span></div>
+    <div class="tblwrap" style="margin-top:9px"><table id="tbl1"></table></div>
+  </div>
+  <div class="card panel">
+    <div class="ptitle"><span>月度明细</span></div>
+    <div class="tblwrap" style="margin-top:9px"><table id="tbl2"></table></div>
+  </div>
+</div>
+
+<h2>数据说明与计算口径 <span class="s">影响数字解读的关键事项</span><div class="line"></div></h2>
+<div class="alert">
+  <svg class="ico" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 2.6 18 16.4H2L10 2.6Z" stroke-linejoin="round"/><path d="M10 7.6v4M10 14.2v.6" stroke-linecap="round"/></svg>
+  <div class="txt"><b>请先看这条：</b><span id="alertTxt"></span>
+    <button class="more" id="alertBtn"></button>
+    <div class="detail" id="alertDetail"></div>
+  </div>
+</div>
+<div class="notes">
+  <div class="note-h" id="noteH"><span class="t">指标定义 · 分档规则 · 数据来源</span><span class="c" id="noteC">展开</span></div>
+  <div class="note-b" id="noteB"></div>
+</div>
+
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+const P = {"meta": {"generated_at": "2026-10-31 10:25", "window": "2026.1–10", "last_date": "2026-10-28", "tiers": ["全款", "首付≥90%", "首付50-90%", "首付<50%", "未标注"], "bands": ["<3万", "3-5万", "5-10万", "10-15万", "15-20万", "20-30万", "30万+"], "raw_rows": 1421, "dedup_dropped": 0, "out_window": 476}, "kpi": {"n": 945, "n_valid": 942, "contract": 90176151.78999999, "paid": 59883972.78, "arpu_contract": 95728.39892781315, "arpu_paid": 63549.33416135881, "median_contract": 60000.0, "down_ratio": 0.9006172839506172, "down_ratio_mean": 0.7349955850270095, "install_share": 24.444444444444443}, "tiers": [{"n": 712, "n_valid": 709, "contract": 58466675.21, "paid": 42342990.980000004, "arpu_contract": 82463.57575458392, "arpu_paid": 59693.21717912553, "median_contract": 36000.0, "down_ratio": 1.0, "down_ratio_mean": 0.8091035858952832, "install_share": 0.0, "tier": "全款", "n_share": 75.34391534391534, "contract_share": 64.83607256401422}, {"n": 24, "n_valid": 24, "contract": 4336913.0, "paid": 4191833.0, "arpu_contract": 180704.70833333334, "arpu_paid": 174659.70833333334, "median_contract": 146150.0, "down_ratio": 0.9603013945119208, "down_ratio_mean": 0.9586442694112448, "install_share": 100.0, "tier": "首付≥90%", "n_share": 2.5396825396825395, "contract_share": 4.809379102913702}, {"n": 86, "n_valid": 86, "contract": 6973858.41, "paid": 4933412.609999999, "arpu_contract": 81091.37686046511, "arpu_paid": 57365.262906976735, "median_contract": 55000.0, "down_ratio": 0.5858555286521389, "down_ratio_mean": 0.6152550012147397, "install_share": 100.0, "tier": "首付50-90%", "n_share": 9.100529100529101, "contract_share": 7.733595048766941}, {"n": 121, "n_valid": 121, "contract": 20298705.17, "paid": 8356696.1899999995, "arpu_contract": 167757.89396694215, "arpu_paid": 69063.60487603306, "median_contract": 127000.0, "down_ratio": 0.3858407079646018, "down_ratio_mean": 0.3426734011172369, "install_share": 100.0, "tier": "首付<50%", "n_share": 12.804232804232804, "contract_share": 22.510059219727104}, {"n": 2, "n_valid": 2, "contract": 100000.0, "paid": 59040.0, "arpu_contract": 50000.0, "arpu_paid": 29520.0, "median_contract": 50000.0, "down_ratio": 0.6642622950819672, "down_ratio_mean": 0.6642622950819672, "install_share": 0.0, "tier": "未标注", "n_share": 0.21164021164021166, "contract_share": 0.1108940645780467}], "month": [{"n": 265, "n_valid": 264, "contract": 11582087.5, "paid": 8700757.1, "arpu_contract": 43871.543560606064, "arpu_paid": 32919.53446969697, "median_contract": 10000.0, "down_ratio": 1.0, "down_ratio_mean": 0.8337471321874074, "install_share": 16.60377358490566, "mon": 1, "complete": true}, {"n": 83, "n_valid": 83, "contract": 6483020.0, "paid": 3436741.2, "arpu_contract": 78108.67469879518, "arpu_paid": 41406.52048192771, "median_contract": 10000.0, "down_ratio": 1.0, "down_ratio_mean": 0.7445775028354559, "install_share": 22.89156626506024, "mon": 2, "complete": true}, {"n": 98, "n_valid": 98, "contract": 8428968.0, "paid": 5728679.92, "arpu_contract": 86009.87755102041, "arpu_paid": 58455.91755102041, "median_contract": 50000.0, "down_ratio": 0.9308532405466774, "down_ratio_mean": 0.7346065170433149, "install_share": 21.428571428571427, "mon": 3, "complete": true}, {"n": 84, "n_valid": 83, "contract": 9706993.11, "paid": 6730546.109999999, "arpu_contract": 116951.72421686746, "arpu_paid": 81078.86879518072, "median_contract": 98000.0, "down_ratio": 0.75, "down_ratio_mean": 0.726515288781333, "install_share": 19.047619047619047, "mon": 4, "complete": true}, {"n": 77, "n_valid": 77, "contract": 11472295.17, "paid": 7300463.24, "arpu_contract": 148990.84636363637, "arpu_paid": 94811.2109090909, "median_contract": 96500.0, "down_ratio": 0.5787610619469027, "down_ratio_mean": 0.6510803217475631, "install_share": 36.36363636363637, "mon": 5, "complete": true}, {"n": 90, "n_valid": 90, "contract": 11622582.0, "paid": 6863434.5, "arpu_contract": 129139.8, "arpu_paid": 76260.38333333333, "median_contract": 105150.0, "down_ratio": 0.5, "down_ratio_mean": 0.608709602622165, "install_share": 41.11111111111111, "mon": 6, "complete": true}, {"n": 93, "n_valid": 92, "contract": 13035755.0, "paid": 8194349.0, "arpu_contract": 141692.98913043478, "arpu_paid": 88965.75, "median_contract": 123500.0, "down_ratio": 0.5084349024505792, "down_ratio_mean": 0.6475991620377842, "install_share": 32.25806451612903, "mon": 7, "complete": true}, {"n": 68, "n_valid": 68, "contract": 8587204.25, "paid": 6282071.25, "arpu_contract": 126282.41544117648, "arpu_paid": 92383.40073529411, "median_contract": 111500.0, "down_ratio": 0.817625, "down_ratio_mean": 0.7175021382977859, "install_share": 22.058823529411764, "mon": 8, "complete": true}, {"n": 55, "n_valid": 55, "contract": 5844125.0, "paid": 4466577.5, "arpu_contract": 106256.81818181818, "arpu_paid": 81210.5, "median_contract": 84000.0, "down_ratio": 0.8888888888888888, "down_ratio_mean": 0.7397179466043591, "install_share": 25.454545454545453, "mon": 9, "complete": true}, {"n": 32, "n_valid": 32, "contract": 3413121.76, "paid": 2180352.96, "arpu_contract": 106660.055, "arpu_paid": 68136.03, "median_contract": 87675.0, "down_ratio": 0.8811265321712096, "down_ratio_mean": 0.7560516699377029, "install_share": 21.875, "mon": 10, "complete": false}], "mon_tier": [{"n": 221, "n_valid": 220, "contract": 8265212.5, "paid": 6759746.0, "arpu_contract": 37569.14772727273, "arpu_paid": 30680.663636363635, "median_contract": 10000.0, "down_ratio": 1.0, "down_ratio_mean": 0.8969946737124094, "install_share": 0.0, "mon": 1, "tier": "全款"}, {"n": 2, "n_valid": 2, "contract": 347300.0, "paid": 329800.0, "arpu_contract": 173650.0, "arpu_paid": 164900.0, "median_contract": 173650.0, "down_ratio": 0.9648640391078521, "down_ratio_mean": 0.9648640391078521, "install_share": 100.0, "mon": 1, "tier": "首付≥90%"}, {"n": 28, "n_valid": 28, "contract": 1162875.0, "paid": 871490.0, "arpu_contract": 41531.25, "arpu_paid": 31124.64285714286, "median_contract": 11000.0, "down_ratio": 0.5, "down_ratio_mean": 0.5871786501109376, "install_share": 100.0, "mon": 1, "tier": "首付50-90%"}, {"n": 14, "n_valid": 14, "contract": 1806700.0, "paid": 739721.1, "arpu_contract": 129050.0, "arpu_paid": 52837.22142857143, "median_contract": 70500.0, "down_ratio": 0.30957446808510636, "down_ratio_mean": 0.3142631713873955, "install_share": 100.0, "mon": 1, "tier": "首付<50%"}, {"n": 63, "n_valid": 63, "contract": 3440900.0, "paid": 2300270.0, "arpu_contract": 54617.46031746032, "arpu_paid": 36512.22222222222, "median_contract": 10000.0, "down_ratio": 1.0, "down_ratio_mean": 0.8338616819942135, "install_share": 0.0, "mon": 2, "tier": "全款"}, {"n": 1, "n_valid": 1, "contract": 156000.0, "paid": 150000.0, "arpu_contract": 156000.0, "arpu_paid": 150000.0, "median_contract": 156000.0, "down_ratio": 0.9615384615384616, "down_ratio_mean": 0.9615384615384616, "install_share": 100.0, "mon": 2, "tier": "首付≥90%"}, {"n": 9, "n_valid": 9, "contract": 321000.0, "paid": 186050.2, "arpu_contract": 35666.666666666664, "arpu_paid": 20672.244444444445, "median_contract": 10000.0, "down_ratio": 0.5, "down_ratio_mean": 0.5530823439878234, "install_share": 100.0, "mon": 2, "tier": "首付50-90%"}, {"n": 9, "n_valid": 9, "contract": 2504120.0, "paid": 780381.0, "arpu_contract": 278235.55555555556, "arpu_paid": 86709.0, "median_contract": 192400.0, "down_ratio": 0.3333333333333333, "down_ratio_mean": 0.333204735790508, "install_share": 100.0, "mon": 2, "tier": "首付<50%"}, {"n": 1, "n_valid": 1, "contract": 61000.0, "paid": 20040.0, "arpu_contract": 61000.0, "arpu_paid": 20040.0, "median_contract": 61000.0, "down_ratio": 0.3285245901639344, "down_ratio_mean": 0.3285245901639344, "install_share": 0.0, "mon": 2, "tier": "未标注"}, {"n": 77, "n_valid": 77, "contract": 6516135.0, "paid": 4396451.92, "arpu_contract": 84625.12987012987, "arpu_paid": 57096.77818181818, "median_contract": 47500.0, "down_ratio": 1.0, "down_ratio_mean": 0.7859131754485229, "install_share": 0.0, "mon": 3, "tier": "全款"}, {"n": 4, "n_valid": 4, "contract": 819373.0, "paid": 805373.0, "arpu_contract": 204843.25, "arpu_paid": 201343.25, "median_contract": 203056.5, "down_ratio": 0.9664886085502515, "down_ratio_mean": 0.9615587623618542, "install_share": 100.0, "mon": 3, "tier": "首付≥90%"}, {"n": 7, "n_valid": 7, "contract": 380600.0, "paid": 240410.0, "arpu_contract": 54371.42857142857, "arpu_paid": 34344.28571428572, "median_contract": 40000.0, "down_ratio": 0.5753339269813, "down_ratio_mean": 0.6316824756196142, "install_share": 100.0, "mon": 3, "tier": "首付50-90%"}, {"n": 10, "n_valid": 10, "contract": 712860.0, "paid": 286445.0, "arpu_contract": 71286.0, "arpu_paid": 28644.5, "median_contract": 45005.0, "down_ratio": 0.3205128205128205, "down_ratio_mean": 0.3208111781923885, "install_share": 100.0, "mon": 3, "tier": "首付<50%"}, {"n": 68, "n_valid": 67, "contract": 6794211.109999999, "paid": 4828635.109999999, "arpu_contract": 101406.13597014925, "arpu_paid": 72054.25537313432, "median_contract": 70000.0, "down_ratio": 0.9, "down_ratio_mean": 0.7720537889094605, "install_share": 0.0, "mon": 4, "tier": "全款"}, {"n": 1, "n_valid": 1, "contract": 166000.0, "paid": 163000.0, "arpu_contract": 166000.0, "arpu_paid": 163000.0, "median_contract": 166000.0, "down_ratio": 0.9819277108433735, "down_ratio_mean": 0.9819277108433735, "install_share": 100.0, "mon": 4, "tier": "首付≥90%"}, {"n": 6, "n_valid": 6, "contract": 1399250.0, "paid": 1030820.0, "arpu_contract": 233208.33333333334, "arpu_paid": 171803.33333333334, "median_contract": 207000.0, "down_ratio": 0.7073009273715106, "down_ratio_mean": 0.7197343636183205, "install_share": 100.0, "mon": 4, "tier": "首付50-90%"}, {"n": 9, "n_valid": 9, "contract": 1347532.0, "paid": 708091.0, "arpu_contract": 149725.77777777778, "arpu_paid": 78676.77777777778, "median_contract": 107682.0, "down_ratio": 0.47198879551820727, "down_ratio_mean": 0.3636479132626108, "install_share": 100.0, "mon": 4, "tier": "首付<50%"}, {"n": 48, "n_valid": 48, "contract": 6463883.0, "paid": 4544007.65, "arpu_contract": 134664.22916666666, "arpu_paid": 94666.82604166667, "median_contract": 71500.0, "down_ratio": 0.95, "down_ratio_mean": 0.736072003907791, "install_share": 0.0, "mon": 5, "tier": "全款"}, {"n": 3, "n_valid": 3, "contract": 801640.0, "paid": 768840.0, "arpu_contract": 267213.3333333333, "arpu_paid": 256280.0, "median_contract": 136000.0, "down_ratio": 0.9573529411764706, "down_ratio_mean": 0.9527596665940395, "install_share": 100.0, "mon": 5, "tier": "首付≥90%"}, {"n": 9, "n_valid": 9, "contract": 622321.0, "paid": 344000.0, "arpu_contract": 69146.77777777778, "arpu_paid": 38222.22222222222, "median_contract": 70321.0, "down_ratio": 0.5787610619469027, "down_ratio_mean": 0.5811636102807476, "install_share": 100.0, "mon": 5, "tier": "首付50-90%"}, {"n": 16, "n_valid": 16, "contract": 3545451.17, "paid": 1604615.5899999999, "arpu_contract": 221590.698125, "arpu_paid": 100288.47437499999, "median_contract": 147463.08500000002, "down_ratio": 0.4143995748780912, "down_ratio_mean": 0.35706106841747143, "install_share": 100.0, "mon": 5, "tier": "首付<50%"}, {"n": 1, "n_valid": 1, "contract": 39000.0, "paid": 39000.0, "arpu_contract": 39000.0, "arpu_paid": 39000.0, "median_contract": 39000.0, "down_ratio": 1.0, "down_ratio_mean": 1.0, "install_share": 0.0, "mon": 5, "tier": "未标注"}, {"n": 53, "n_valid": 53, "contract": 6200890.0, "paid": 4105426.0, "arpu_contract": 116997.92452830188, "arpu_paid": 77460.8679245283, "median_contract": 98000.0, "down_ratio": 0.7, "down_ratio_mean": 0.7017005759265962, "install_share": 0.0, "mon": 6, "tier": "全款"}, {"n": 3, "n_valid": 3, "contract": 324000.0, "paid": 310000.0, "arpu_contract": 108000.0, "arpu_paid": 103333.33333333333, "median_contract": 78000.0, "down_ratio": 0.9590643274853801, "down_ratio_mean": 0.9562693057429899, "install_share": 100.0, "mon": 6, "tier": "首付≥90%"}, {"n": 10, "n_valid": 10, "contract": 895350.0, "paid": 721650.0, "arpu_contract": 89535.0, "arpu_paid": 72165.0, "median_contract": 60750.0, "down_ratio": 0.6773584905660377, "down_ratio_mean": 0.68600469665511, "install_share": 100.0, "mon": 6, "tier": "首付50-90%"}, {"n": 24, "n_valid": 24, "contract": 4202342.0, "paid": 1726358.5, "arpu_contract": 175097.58333333334, "arpu_paid": 71931.60416666667, "median_contract": 148492.5, "down_ratio": 0.38209904629037195, "down_ratio_mean": 0.3277032845043826, "install_share": 100.0, "mon": 6, "tier": "首付<50%"}, {"n": 63, "n_valid": 62, "contract": 8055275.0, "paid": 5785805.0, "arpu_contract": 129923.79032258065, "arpu_paid": 93166.20967741935, "median_contract": 91399.0, "down_ratio": 0.827007299270073, "down_ratio_mean": 0.730969517649963, "install_share": 0.0, "mon": 7, "tier": "全款"}, {"n": 3, "n_valid": 3, "contract": 357800.0, "paid": 346320.0, "arpu_contract": 119266.66666666667, "arpu_paid": 115440.0, "median_contract": 126000.0, "down_ratio": 0.9723809523809523, "down_ratio_mean": 0.9586506745674496, "install_share": 100.0, "mon": 7, "tier": "首付≥90%"}, {"n": 5, "n_valid": 5, "contract": 782100.0, "paid": 548760.0, "arpu_contract": 156420.0, "arpu_paid": 109752.0, "median_contract": 70000.0, "down_ratio": 0.6666666666666666, "down_ratio_mean": 0.6542894108602862, "install_share": 100.0, "mon": 7, "tier": "首付50-90%"}, {"n": 22, "n_valid": 22, "contract": 3840580.0, "paid": 1513464.0, "arpu_contract": 174571.81818181818, "arpu_paid": 68793.81818181818, "median_contract": 161670.0, "down_ratio": 0.4065605650154799, "down_ratio_mean": 0.3687097152352117, "install_share": 100.0, "mon": 7, "tier": "首付<50%"}, {"n": 53, "n_valid": 53, "contract": 6534841.84, "paid": 5013448.84, "arpu_contract": 123298.90264150943, "arpu_paid": 94593.37433962263, "median_contract": 108700.0, "down_ratio": 0.9725603671921772, "down_ratio_mean": 0.7716818820098085, "install_share": 0.0, "mon": 8, "tier": "全款"}, {"n": 3, "n_valid": 3, "contract": 450500.0, "paid": 434500.0, "arpu_contract": 150166.66666666666, "arpu_paid": 144833.33333333334, "median_contract": 138500.0, "down_ratio": 0.9638989169675091, "down_ratio_mean": 0.9687355364250672, "install_share": 100.0, "mon": 8, "tier": "首付≥90%"}, {"n": 3, "n_valid": 3, "contract": 525442.41, "paid": 361112.41000000003, "arpu_contract": 175147.47, "arpu_paid": 120370.80333333334, "median_contract": 130792.41, "down_ratio": 0.6171171171171171, "down_ratio_mean": 0.605824071898284, "install_share": 100.0, "mon": 8, "tier": "首付50-90%"}, {"n": 9, "n_valid": 9, "contract": 1076420.0, "paid": 473010.0, "arpu_contract": 119602.22222222222, "arpu_paid": 52556.666666666664, "median_contract": 117800.0, "down_ratio": 0.396148247676632, "down_ratio_mean": 0.3519252036399484, "install_share": 100.0, "mon": 8, "tier": "首付<50%"}, {"n": 41, "n_valid": 41, "contract": 3776755.0, "paid": 3053072.5, "arpu_contract": 92115.9756097561, "arpu_paid": 74465.18292682926, "median_contract": 80400.0, "down_ratio": 0.9378109452736318, "down_ratio_mean": 0.7995167531579188, "install_share": 0.0, "mon": 9, "tier": "全款"}, {"n": 3, "n_valid": 3, "contract": 833300.0, "paid": 807000.0, "arpu_contract": 277766.6666666667, "arpu_paid": 269000.0, "median_contract": 265100.0, "down_ratio": 0.9511002444987775, "down_ratio_mean": 0.959184349311682, "install_share": 100.0, "mon": 9, "tier": "首付≥90%"}, {"n": 5, "n_valid": 5, "contract": 495920.0, "paid": 327320.0, "arpu_contract": 99184.0, "arpu_paid": 65464.0, "median_contract": 77120.0, "down_ratio": 0.6771265560165975, "down_ratio_mean": 0.6446259565481852, "install_share": 100.0, "mon": 9, "tier": "首付50-90%"}, {"n": 6, "n_valid": 6, "contract": 738150.0, "paid": 279185.0, "arpu_contract": 123025.0, "arpu_paid": 46530.833333333336, "median_contract": 124750.0, "down_ratio": 0.3354976019184652, "down_ratio_mean": 0.30060289218152003, "install_share": 100.0, "mon": 9, "tier": "首付<50%"}, {"n": 25, "n_valid": 25, "contract": 2418571.76, "paid": 1556127.96, "arpu_contract": 96742.87039999999, "arpu_paid": 62245.1184, "median_contract": 71900.0, "down_ratio": 1.0, "down_ratio_mean": 0.8007354567577772, "install_share": 0.0, "mon": 10, "tier": "全款"}, {"n": 1, "n_valid": 1, "contract": 81000.0, "paid": 77000.0, "arpu_contract": 81000.0, "arpu_paid": 77000.0, "median_contract": 81000.0, "down_ratio": 0.9012345679012346, "down_ratio_mean": 0.9012345679012346, "install_share": 100.0, "mon": 10, "tier": "首付≥90%"}, {"n": 4, "n_valid": 4, "contract": 389000.0, "paid": 301800.0, "arpu_contract": 97250.0, "arpu_paid": 75450.0, "median_contract": 117000.0, "down_ratio": 0.5252173913043479, "down_ratio_mean": 0.587608695652174, "install_share": 100.0, "mon": 10, "tier": "首付50-90%"}, {"n": 2, "n_valid": 2, "contract": 524550.0, "paid": 245425.0, "arpu_contract": 262275.0, "arpu_paid": 122712.5, "median_contract": 262275.0, "down_ratio": 0.4617988342760678, "down_ratio_mean": 0.4617988342760678, "install_share": 100.0, "mon": 10, "tier": "首付<50%"}], "band": [{"band": "<3万", "n": 400, "install": 51, "install_rate": 12.75, "contract": 4467075.0, "arpu": 11167.6875, "down_ratio": 1.0}, {"band": "3-5万", "n": 49, "install": 10, "install_rate": 20.408163265306122, "contract": 2131100.0, "arpu": 43491.836734693876, "down_ratio": 1.0}, {"band": "5-10万", "n": 158, "install": 44, "install_rate": 27.848101265822784, "contract": 12236712.76, "arpu": 77447.54911392405, "down_ratio": 0.6085585585585586}, {"band": "10-15万", "n": 121, "install": 51, "install_rate": 42.14876033057851, "contract": 14863069.42, "arpu": 122835.28446280991, "down_ratio": 0.5}, {"band": "15-20万", "n": 79, "install": 22, "install_rate": 27.848101265822784, "contract": 13593630.11, "arpu": 172071.26721518987, "down_ratio": 0.5826589595375723}, {"band": "20-30万", "n": 82, "install": 31, "install_rate": 37.80487804878049, "contract": 19886800.0, "arpu": 242521.9512195122, "down_ratio": 0.5}, {"band": "30万+", "n": 53, "install": 22, "install_rate": 41.509433962264154, "contract": 22997764.5, "arpu": 433920.08490566036, "down_ratio": 0.5}], "heat": {"全款": {"1": 37569.14772727273, "2": 54617.46031746032, "3": 84625.12987012987, "4": 101406.13597014925, "5": 134664.22916666666, "6": 116997.92452830188, "7": 129923.79032258065, "8": 123298.90264150943, "9": 92115.9756097561, "10": 96742.87039999999}, "首付≥90%": {"1": 173650.0, "2": 156000.0, "3": 204843.25, "4": 166000.0, "5": 267213.3333333333, "6": 108000.0, "7": 119266.66666666667, "8": 150166.66666666666, "9": 277766.6666666667, "10": 81000.0}, "首付50-90%": {"1": 41531.25, "2": 35666.666666666664, "3": 54371.42857142857, "4": 233208.33333333334, "5": 69146.77777777778, "6": 89535.0, "7": 156420.0, "8": 175147.47, "9": 99184.0, "10": 97250.0}, "首付<50%": {"1": 129050.0, "2": 278235.55555555556, "3": 71286.0, "4": 149725.77777777778, "5": 221590.698125, "6": 175097.58333333334, "7": 174571.81818181818, "8": 119602.22222222222, "9": 123025.0, "10": 262275.0}, "未标注": {"2": 61000.0, "5": 39000.0}}, "dq": [{"level": "warn", "item": "10 月数据未完整", "detail": "成交时间截至 2026-10-28，10 月仅 32 单", "impact": "10 月客单价波动不代表整月水平"}, {"level": "warn", "item": "「全款」标记存在未付清", "detail": "712 单标记全款，其中首期占合同额 <40% 的有 60 单", "impact": "该标记按款项周期原值使用，未做二次修正；可能含增户或分期未回填"}, {"level": "info", "item": "付款能力分档切点", "detail": "全款按「款项周期」；分期按 首期认款÷合同总金额：≥90% / 50–90% / <50%", "impact": "分期 231 单中 <50% 占 121 单，是主要分期群体"}, {"level": "warn", "item": "合同额缺失 3 单", "detail": "945 单中合同额>0 的 942 单", "impact": "客单价分母用有效样本，单数仍计入总量"}, {"level": "info", "item": "客户星级不可用", "detail": "一星 1,286 / 五星 42 / 四星 15 / 三星 12 / 二星 9，一星占 94.5%", "impact": "视为默认值，未作为支付能力代理指标"}, {"level": "info", "item": "回款流水表不可用", "detail": "「回款导出明细」工作表全部仅 2 行", "impact": "无法计算回款周期与分期履约率"}]};
+const $ = s => document.querySelector(s);
+const fmt = (n,d=0)=> n==null?'—':Number(n).toLocaleString('zh-CN',{minimumFractionDigits:d,maximumFractionDigits:d});
+const wan = n => n==null?'—':(n/10000).toLocaleString('zh-CN',{minimumFractionDigits:1,maximumFractionDigits:1});
+const pct = n => n==null?'—':n.toFixed(1)+'%';
+const C = {blue:'#2F5BEA', amber:'#E8952A', teal:'#0FA3A3', violet:'#7C5CD6',
+           green:'#0E9F6E', grey:'#D9DEE7', red:'#D64545', ink:'#141A22'};
+const TIER_C = {'全款':'#2F5BEA','首付≥90%':'#0E9F6E','首付50-90%':'#E8952A','首付<50%':'#D64545'};
+const TIERS = P.meta.tiers.filter(t=>t!=='未标注');
+const MONTHS = P.month.map(m=>m.mon);
+
+function niceMax(v, ticks=4){
+  if(!(v>0)) return 1;
+  const raw=v/ticks, mag=Math.pow(10, Math.floor(Math.log10(raw))), n=raw/mag;
+  const step = n<=1?1 : n<=1.5?1.5 : n<=2?2 : n<=2.5?2.5 : n<=3?3 : n<=4?4 : n<=5?5 : n<=6?6 : n<=8?8 : 10;
+  return step*mag*ticks;
+}
+
+const tip = $('#tip');
+function showTip(e,html){
+  tip.innerHTML=html; tip.classList.add('on');
+  const r=tip.getBoundingClientRect();
+  let x=e.clientX+14, y=e.clientY-r.height-10;
+  if(x+r.width>innerWidth-8) x=e.clientX-r.width-14;
+  if(y<8) y=e.clientY+16;
+  tip.style.left=x+'px'; tip.style.top=y+'px';
+}
+const hideTip=()=>tip.classList.remove('on');
+document.addEventListener('mouseleave',hideTip);
+function bindTips(sel){
+  document.querySelectorAll(sel+' [data-t]').forEach(el=>{
+    el.addEventListener('mouseenter',e=>showTip(e, el.dataset.t.split('|').map((s,i)=> i===0?`<b>${s}</b>`:s).join('<br>')));
+    el.addEventListener('mousemove',e=>showTip(e, el.dataset.t.split('|').map((s,i)=> i===0?`<b>${s}</b>`:s).join('<br>')));
+    el.addEventListener('mouseleave',hideTip);
+  });
+}
+
+/* ── 核心结论 ── */
+function renderSummary(){
+  const k = P.kpi;
+  const ti = {}; P.tiers.forEach(t=>ti[t.tier]=t);
+  const full = ti['全款'], low = ti['首付<50%'];
+  const mBy = {}; P.month.forEach(m=>mBy[m.mon]=m);
+  const m1 = mBy[1], peakM = P.month.slice().filter(m=>m.complete).sort((a,b)=>b.arpu_contract-a.arpu_contract)[0];
+  const minDown = P.month.slice().filter(m=>m.complete&&m.down_ratio!=null).sort((a,b)=>a.down_ratio-b.down_ratio)[0];
+  const maxDown = P.month.slice().filter(m=>m.complete&&m.down_ratio!=null).sort((a,b)=>b.down_ratio-a.down_ratio)[0];
+  const done = k.paid/k.contract*100;
+  const lateVals = P.month.filter(m=>m.mon>=8 && m.complete && m.down_ratio!=null).map(m=>m.down_ratio).sort((a,b)=>a-b);
+  const late = [lateVals[0], lateVals[lateVals.length-1]];
+
+  const items = [
+    `<b>规模与价格</b>　2026.1–10 成交 <b>${fmt(k.n)} 单</b>，合同额 <b>${wan(k.contract)} 万元</b>，合同客单价 <b>${fmt(k.arpu_contract)} 元/单</b>；实际收款 <b>${wan(k.paid)} 万元</b>，实付客单价 ${fmt(k.arpu_paid)} 元/单，<b>整体回款完成率 ${pct(done)}</b>。`,
+    `<b>客单价怎么变的</b>　合同客单价由 1 月 ${wan(m1.arpu_contract)} 万元/单升至 ${peakM.mon} 月 <b>${wan(peakM.arpu_contract)} 万元/单</b>（${(peakM.arpu_contract/m1.arpu_contract).toFixed(1)} 倍），8 月起回落至 10.6–12.6 万元。`,
+    `<b>同期首付能力在退</b>　首付比例中位数由 ${maxDown.mon} 月 <b>${maxDown.down_ratio.toFixed(2)}</b> 降至 ${minDown.mon} 月 <b>${minDown.down_ratio.toFixed(2)}</b>，分期率同区间由 ${mBy[maxDown.mon].install_share.toFixed(1)}% 升至 ${mBy[minDown.mon].install_share.toFixed(1)}%；8 月后首付比回升至 <b>${late[0].toFixed(2)}–${late[1].toFixed(2)}</b>，客单价同步回落。<b>客单价的上涨，有一部分是靠放宽付款条件换来的。</b>`,
+    `<b>大单客户首付反而低</b>　首付＜50% 的 ${low.n} 单只占单数 ${pct(low.n_share)}，却贡献合同额 ${pct(low.contract_share)}，客单价 <b>${fmt(low.arpu_contract)} 元</b>，是${full.tier}客户（${fmt(full.arpu_contract)} 元）的 ${(low.arpu_contract/full.arpu_contract).toFixed(1)} 倍。`
+  ];
+  $('#sumList').innerHTML = items.map((t,i)=>`<li><span class="n">${i+1}</span><div>${t}</div></li>`).join('');
+  $('#sumFoot').innerHTML = `
+    <span>分期 ${fmt(k.install_share)}% 的单子</span>
+    <span>首付比中位 ${k.down_ratio.toFixed(2)}</span>
+    <span>有效样本 ${fmt(k.n_valid)} 单（合同额＞0）</span>
+    <span>数据截至 ${P.meta.last_date}</span>`;
+}
+
+/* ── KPI ── */
+function renderKPI(){
+  const k = P.kpi;
+  const done = k.paid/k.contract*100;
+  const cards = [
+    {lab:'成交单数', val:fmt(k.n), unit:'单', color:'var(--blue)',
+     foot:`有效样本 ${fmt(k.n_valid)} 单（合同额＞0）`},
+    {lab:'合同额', val:wan(k.contract), unit:'万元', color:'var(--violet)',
+     foot:`实际收款 ${wan(k.paid)} 万元`},
+    {lab:'合同客单价', val:fmt(k.arpu_contract), unit:'元', color:'var(--teal)',
+     foot:'合同总金额 ÷ 有效单数'},
+    {lab:'实付客单价', val:fmt(k.arpu_paid), unit:'元', color:'var(--amber)',
+     foot:`回款完成率 ${pct(done)} · 支付金额 ÷ 有效单数`},
+    {lab:'分期单占比', val:fmt(k.install_share,1), unit:'%', color:'var(--red)',
+     foot:`首付比中位 ${k.down_ratio.toFixed(2)} · 全款 ${fmt(100-k.install_share,1)}%`},
+  ];
+  $('#kpiGrid').innerHTML = cards.map(k=>`
+    <div class="card kpi">
+      <div class="lab"><i style="background:${k.color}"></i>${k.lab}</div>
+      <div class="valrow"><div class="val">${k.val}${k.unit?`<small>${k.unit}</small>`:''}</div></div>
+      <div class="foot">${k.foot}</div>
+    </div>`).join('');
+}
+
+/* ── 图 A：合同客单价 × 首付比 ── */
+function renderA(){
+  const rows = P.month;
+  const W=640,H=310,pl=48,pr=50,pt=18,pb=36, iw=W-pl-pr, ih=H-pt-pb;
+  const maxA = niceMax(Math.max(...rows.map(r=>r.arpu_contract))/10000);
+  const yL = v => pt+ih-(v/10000)/maxA*ih;
+  const yR = r => pt+ih-r*ih;
+  const step=iw/rows.length, bw=Math.min(40,step*0.5), cx=i=>pl+step*(i+0.5);
+
+  let g='';
+  for(let i=0;i<=4;i++){
+    const v=maxA/4*i, yy=yL(v*10000);
+    g+=`<line class="gridline" x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}"/>`;
+    g+=`<text class="tick" x="${pl-8}" y="${yy+3.5}" text-anchor="end">${v.toFixed(0)}</text>`;
+    g+=`<text class="tick" x="${W-pr+8}" y="${yy+3.5}" text-anchor="start">${Math.round(i*25)}%</text>`;
+  }
+  rows.forEach((d,i)=>{
+    const h=Math.max(1, pt+ih-yL(d.arpu_contract));
+    g+=`<rect class="bar" x="${cx(i)-bw/2}" y="${yL(d.arpu_contract)}" width="${bw}" height="${h}"
+        fill="${d.complete?C.blue:'#B9C6E8'}" rx="3"
+        data-t="${d.mon}月|合同客单价 ${fmt(d.arpu_contract)} 元/单|合同额 ${wan(d.contract)} 万元|单数 ${d.n}"/>`;
+    g+=`<text class="tick" x="${cx(i)}" y="${H-12}" text-anchor="middle">${d.mon}月</text>`;
+  });
+  const pts = rows.filter(d=>d.down_ratio!=null).map(d=>[cx(rows.indexOf(d)), yR(d.down_ratio)]);
+  g+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${C.amber}" stroke-width="2.2" stroke-linejoin="round"/>`;
+  rows.forEach((d,i)=>{
+    if(d.down_ratio==null) return;
+    g+=`<circle class="bar" cx="${cx(i)}" cy="${yR(d.down_ratio)}" r="3.6" fill="#fff" stroke="${C.amber}" stroke-width="2"
+        data-t="${d.mon}月|首付比中位 ${d.down_ratio.toFixed(2)}|分期率 ${d.install_share.toFixed(1)}%|单数 ${d.n}"/>`;
+  });
+  // 渐变分界：标注首付比低谷
+  const low = rows.filter(d=>d.complete&&d.down_ratio!=null).sort((a,b)=>a.down_ratio-b.down_ratio)[0];
+  if(low){
+    g+=`<line x1="${cx(rows.indexOf(low))}" x2="${cx(rows.indexOf(low))}" y1="${pt}" y2="${pt+ih}"
+        stroke="${C.red}" stroke-width="1" stroke-dasharray="3 3" opacity=".35"/>`;
+    g+=`<text class="tick" x="${cx(rows.indexOf(low))+5}" y="${pt+11}" fill="${C.red}" font-size="10">首付低谷</text>`;
+  }
+  $('#chA').innerHTML=`<svg viewBox="0 0 ${W} ${H}">${g}</svg>`;
+  bindTips('#chA');
+}
+
+/* ── 图 B：合同 vs 实付客单价 ── */
+function renderB(){
+  const rows = P.month;
+  const W=480,H=322,pl=46,pr=16,pt=18,pb=54, iw=W-pl-pr, ih=H-pt-pb;
+  const maxV = niceMax(Math.max(...rows.map(r=>Math.max(r.arpu_contract,r.arpu_paid)))/10000);
+  const y = v => pt+ih-(v/10000)/maxV*ih;
+  const step=iw/rows.length, cx=i=>pl+step*(i+0.5);
+  let g='';
+  for(let i=0;i<=4;i++){
+    const v=maxV/4*i, yy=y(v*10000);
+    g+=`<line class="gridline" x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}"/>`;
+    g+=`<text class="tick" x="${pl-7}" y="${yy+3.5}" text-anchor="end">${v.toFixed(0)}</text>`;
+  }
+  const area = rows.map((d,i)=>`${cx(i)},${y(d.arpu_contract)}`).join(' ')
+             + ' ' + rows.slice().reverse().map((d,i)=>`${cx(rows.length-1-i)},${y(d.arpu_paid)}`).join(' ');
+  g+=`<polygon points="${area}" fill="${C.blue}" opacity=".07"/>`;
+  const line = (key,col) => {
+    g+=`<polyline points="${rows.map((d,i)=>`${cx(i)},${y(d[key])}`).join(' ')}" fill="none"
+        stroke="${col}" stroke-width="2.2" stroke-linejoin="round"/>`;
+    rows.forEach((d,i)=>{
+      g+=`<circle class="bar" cx="${cx(i)}" cy="${y(d[key])}" r="3.2" fill="#fff" stroke="${col}" stroke-width="2"
+          data-t="${d.mon}月|${key==='arpu_contract'?'合同':'实付'}客单价 ${fmt(d[key])} 元|完成率 ${(d.paid/d.contract*100).toFixed(1)}%|单数 ${d.n}"/>`;
+    });
+  };
+  line('arpu_contract', C.blue);
+  line('arpu_paid', C.teal);
+  rows.forEach((d,i)=>{
+    g+=`<text class="tick" x="${cx(i)}" y="${H-32}" text-anchor="middle">${d.mon}月</text>`;
+    const done=(d.paid/d.contract*100);
+    g+=`<text x="${cx(i)}" y="${H-15}" text-anchor="middle" font-size="9.5" fill="#8C96A3"
+        font-family="inherit" font-variant-numeric="tabular-nums">${done.toFixed(0)}%</text>`;
+  });
+  g+=`<text x="${pl-7}" y="${H-15}" text-anchor="end" font-size="9" fill="#B4BCC7" font-family="inherit">完成率</text>`;
+  $('#chB').innerHTML=`<svg viewBox="0 0 ${W} ${H}">${g}</svg>`;
+  const d = P.kpi.paid/P.kpi.contract*100;
+  $('#doneNote').textContent = `全期完成率 ${d.toFixed(1)}% · 线上方为合同、下方为实付 · 底部为当月完成率`;
+  bindTips('#chB');
+}
+
+/* ── 图 C：档位结构（横向双条） ── */
+function renderC(){
+  const rows = P.tiers.filter(t=>t.tier!=='未标注');
+  const maxV = Math.max(...rows.map(r=>Math.max(r.n_share, r.contract_share)));
+  const bar = (val,col) => `<div class="barwrap"><i style="width:${Math.max(1,val/maxV*100)}%;background:${col}"></i></div>`;
+  $('#chC').innerHTML = rows.map(r=>`
+    <div class="row">
+      <span class="nm">${r.tier}</span>
+      ${bar(r.n_share, C.blue)}
+      <span class="v">${pct(r.n_share)}</span>
+      <span class="sub">${fmt(r.n)} 单</span>
+    </div>
+    <div class="row" style="margin-top:-4px">
+      <span class="nm" style="color:#B4BCC7;font-size:11px">合同额</span>
+      ${bar(r.contract_share, C.violet)}
+      <span class="v" style="color:#5B6572;font-weight:500">${pct(r.contract_share)}</span>
+      <span class="sub">${wan(r.contract)} 万</span>
+    </div>`).join('');
+  const low = rows.find(r=>r.tier==='首付<50%'), full = rows.find(r=>r.tier==='全款');
+  $('#chCfoot').innerHTML = `首付＜50% 用 ${pct(low.n_share)} 的单数拿下 ${pct(low.contract_share)} 的合同额；
+    客单价 ${fmt(low.arpu_contract)} 元，是${full.tier}（${fmt(full.arpu_contract)} 元）的 ${(low.arpu_contract/full.arpu_contract).toFixed(1)} 倍。`;
+}
+
+/* ── 图 D：合同档 × 分期率 ── */
+function renderD(){
+  const rows = P.band;
+  const W=480,H=250,pl=44,pr=16,pt=20,pb=44, iw=W-pl-pr, ih=H-pt-pb;
+  const maxV = niceMax(Math.max(...rows.map(r=>r.install_rate)));
+  const y = v => pt+ih-v/maxV*ih;
+  const step=iw/rows.length, bw=Math.min(36,step*0.5), cx=i=>pl+step*(i+0.5);
+  let g='';
+  for(let i=0;i<=4;i++){
+    const v=maxV/4*i, yy=y(v);
+    g+=`<line class="gridline" x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}"/>`;
+    g+=`<text class="tick" x="${pl-7}" y="${yy+3.5}" text-anchor="end">${v.toFixed(0)}%</text>`;
+  }
+  rows.forEach((d,i)=>{
+    const h=Math.max(1, pt+ih-y(d.install_rate));
+    g+=`<rect class="bar" x="${cx(i)-bw/2}" y="${y(d.install_rate)}" width="${bw}" height="${h}"
+        fill="${C.violet}" rx="3" opacity="${d.n<50?.55:1}"
+        data-t="${d.band}|分期率 ${d.install_rate.toFixed(1)}%|分期 ${d.install}/${d.n} 单|合同额 ${wan(d.contract)} 万元"/>`;
+    g+=`<text class="tick" x="${cx(i)}" y="${y(d.install_rate)-5}" text-anchor="middle" fill="#5B6572" font-weight="600">${d.install_rate.toFixed(0)}%</text>`;
+    g+=`<text class="tick" x="${cx(i)}" y="${H-26}" text-anchor="middle">${d.band}</text>`;
+    g+=`<text class="tick" x="${cx(i)}" y="${H-13}" text-anchor="middle" font-size="9" fill="#B4BCC7">${d.n} 单</text>`;
+  });
+  $('#chD').innerHTML=`<svg viewBox="0 0 ${W} ${H}">${g}</svg>`;
+  bindTips('#chD');
+}
+
+/* ── 图 E：分层客单价走势 ── */
+function renderE(){
+  const rows = P.mon_tier;
+  const get = (t,m) => rows.find(r=>r.tier===t && r.mon===m);
+  const W=1100,H=330,pl=52,pr=20,pt=20,pb=40, iw=W-pl-pr, ih=H-pt-pb;
+  const all = rows.filter(r=>r.arpu_contract!=null).map(r=>r.arpu_contract);
+  const maxV = niceMax(Math.max(...all)/10000);
+  const y = v => pt+ih-(v/10000)/maxV*ih;
+  const step=iw/MONTHS.length, cx=i=>pl+step*(i+0.5);
+  let g='';
+  for(let i=0;i<=4;i++){
+    const v=maxV/4*i, yy=y(v*10000);
+    g+=`<line class="gridline" x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}"/>`;
+    g+=`<text class="tick" x="${pl-8}" y="${yy+3.5}" text-anchor="end">${v.toFixed(0)}</text>`;
+  }
+  MONTHS.forEach((m,i)=>{
+    g+=`<text class="tick" x="${cx(i)}" y="${H-14}" text-anchor="middle">${m}月</text>`;
+  });
+  TIERS.forEach(t=>{
+    const col = TIER_C[t] || C.grey;
+    const pts = MONTHS.map((m,i)=>{ const d=get(t,m); return d?[cx(i), y(d.arpu_contract), d.n]:null; })
+                       .filter(Boolean);
+    if(!pts.length) return;
+    const main = (t==='全款');
+    g+=`<polyline points="${pts.map(p=>p[0]+','+p[1]).join(' ')}" fill="none" stroke="${col}"
+        stroke-width="${main?2.8:1.9}" stroke-linejoin="round" opacity="${main?1:.85}"/>`;
+    MONTHS.forEach((m,i)=>{
+      const d=get(t,m); if(!d) return;
+      const small = d.n<5;
+      g+=`<circle class="bar" cx="${cx(i)}" cy="${y(d.arpu_contract)}" r="${small?3:3.6}"
+          fill="${small?'#fff':col}" stroke="${col}" stroke-width="${small?1.6:0}"
+          data-t="${m}月 · ${t}|合同客单价 ${wan(d.arpu_contract)} 万元/单|单数 ${d.n}${small?'（样本不足5单）':''}"/>`;
+    });
+  });
+  $('#chE').innerHTML=`<svg viewBox="0 0 ${W} ${H}">${g}</svg>`;
+  $('#tierLegend').innerHTML = TIERS.map(t=>
+    `<span><i style="background:${TIER_C[t]};border-radius:50%"></i>${t}</span>`).join('')
+    + `<span style="color:#B4BCC7">｜空心点＝样本＜5</span>`;
+  bindTips('#chE');
+}
+
+/* ── 热力矩阵 ── */
+function renderHeat(){
+  const tiers = TIERS;
+  const val = {};
+  tiers.forEach(t=>{ val[t]={}; MONTHS.forEach(m=>{ const d=P.mon_tier.find(r=>r.tier===t&&r.mon===m); val[t][m]=d?d.arpu_contract:null; }); });
+  const nums = tiers.flatMap(t=>MONTHS.map(m=>val[t][m])).filter(v=>v!=null);
+  const max = Math.max(...nums), min = Math.min(...nums);
+  const col = v => {
+    if(v==null) return '#FAFBFC';
+    const r = (v-min)/(max-min||1);
+    return `rgba(47,91,234,${(0.06+0.78*Math.pow(r,0.85)).toFixed(3)})`;
+  };
+  const txt = v => v==null ? '#DDE2E9' : ((v-min)/(max-min||1)>0.55?'#fff':'#141A22');
+
+  let h='<thead><tr><th>付款能力</th>'+MONTHS.map(m=>`<th>${m}月</th>`).join('')+'<th>全期</th></tr></thead><tbody>';
+  tiers.forEach(t=>{
+    const tr = P.tiers.find(x=>x.tier===t);
+    h+=`<tr><td class="nm">${t}</td>`;
+    MONTHS.forEach(m=>{
+      const v=val[t][m];
+      h+=`<td style="background:${col(v)};color:${txt(v)}" data-t="${t} · ${m}月|合同客单价 ${v==null?'—':wan(v)+' 万元/单'}">${v==null?'—':wan(v)}</td>`;
+    });
+    h+=`<td style="background:#F7F9FC;font-weight:650">${wan(tr.arpu_contract)}</td></tr>`;
+  });
+  h+='</tbody>';
+  $('#heatTbl').innerHTML=h;
+  bindTips('#heatTbl');
+}
+
+/* ── 明细表 ── */
+function renderTables(){
+  const rows = P.tiers;
+  let h=`<thead><tr><th>付款能力</th><th>单数</th><th>单数占比</th><th>合同额(万)</th><th>金额占比</th>
+        <th>合同客单价</th><th>实付客单价</th><th>首付比中位</th></tr></thead><tbody>`;
+  rows.forEach(r=>{
+    const dim = r.tier==='未标注';
+    h+=`<tr class="${dim?'dim':''}"><td>${dim?'未标注（款项周期为空）':r.tier}</td><td>${fmt(r.n)}</td>
+        <td>${pct(r.n_share)}</td><td>${wan(r.contract)}</td>
+        <td>${pct(r.contract_share)}</td><td>${fmt(r.arpu_contract)}</td><td>${fmt(r.arpu_paid)}</td>
+        <td>${r.down_ratio==null?'—':r.down_ratio.toFixed(2)}</td></tr>`;
+  });
+  h+=`<tr class="tot"><td>合计</td><td>${fmt(P.kpi.n)}</td><td>100.0%</td><td>${wan(P.kpi.contract)}</td><td>100.0%</td>
+      <td>${fmt(P.kpi.arpu_contract)}</td><td>${fmt(P.kpi.arpu_paid)}</td>
+      <td>${P.kpi.down_ratio.toFixed(2)}</td></tr></tbody>`;
+  $('#tbl1').innerHTML=h;
+
+  let h2=`<thead><tr><th>月份</th><th>单数</th><th>合同额(万)</th><th>实付(万)</th>
+          <th>合同客单价</th><th>实付客单价</th><th>回款完成率</th><th>首付比中位</th></tr></thead><tbody>`;
+  let t2={n:0,contract:0,paid:0};
+  P.month.forEach(r=>{
+    t2.n+=r.n; t2.contract+=r.contract; t2.paid+=r.paid;
+    const done = r.contract? r.paid/r.contract*100 : null;
+    h2+=`<tr class="${r.complete?'':'dim'}"><td>${r.mon}月${r.complete?'':'<span style="font-size:9.5px;color:#B4BCC7;margin-left:3px">未完整</span>'}</td>
+      <td>${fmt(r.n)}</td><td>${wan(r.contract)}</td><td>${wan(r.paid)}</td>
+      <td>${fmt(r.arpu_contract)}</td><td>${fmt(r.arpu_paid)}</td><td>${pct(done)}</td>
+      <td>${r.down_ratio==null?'—':r.down_ratio.toFixed(2)}</td></tr>`;
+  });
+  h2+=`<tr class="tot"><td>合计</td><td>${fmt(t2.n)}</td><td>${wan(t2.contract)}</td><td>${wan(t2.paid)}</td>
+       <td>${fmt(t2.contract/P.kpi.n_valid)}</td><td>${fmt(t2.paid/P.kpi.n_valid)}</td>
+       <td>${pct(t2.paid/t2.contract*100)}</td><td>${P.kpi.down_ratio.toFixed(2)}</td></tr></tbody>`;
+  $('#tbl2').innerHTML=h2;
+}
+
+/* ── 说明 ── */
+function renderNotes(){
+  const dq = P.dq;
+  $('#alertTxt').textContent =
+    `10 月成交仅 ${P.month[9].n} 单且截至 ${P.meta.last_date}，未完整；「全款」标记里有部分首期未付清（可能含增户或分期未回填），已按原值使用未做修正。`;
+  $('#alertBtn').textContent = `展开 ${dq.length} 项口径事项`;
+  $('#alertDetail').innerHTML = dq.map(d=>`<div><em>[${d.level==='warn'?'注意':'说明'}] ${d.item}</em>${d.detail}${d.impact?`<br><span style="color:#A5761C;opacity:.85">→ ${d.impact}</span>`:''}</div>`).join('');
+  $('#alertBtn').onclick=()=>{
+    const el=$('#alertDetail'); el.classList.toggle('open');
+    $('#alertBtn').textContent = el.classList.contains('open')?'收起':`展开 ${dq.length} 项口径事项`;
+  };
+
+  $('#noteB').innerHTML = `
+    <h4>五个指标的定义</h4>
+    <li><b>成交单数</b>＝订单表按「订单编号」去重后的单份合同数，时间取「成交时间」落在 2026.1–10，共 ${fmt(P.kpi.n)} 单。</li>
+    <li><b>合同额</b>＝「合同总金额」求和，${wan(P.kpi.contract)} 万元；<b>实际收款</b>＝「支付金额」求和，${wan(P.kpi.paid)} 万元。</li>
+    <li><b>合同客单价</b>＝合同额 ÷ 有效单数（合同额＞0）＝${fmt(P.kpi.arpu_contract)} 元/单。</li>
+    <li><b>实付客单价</b>＝实际收款 ÷ 有效单数＝${fmt(P.kpi.arpu_paid)} 元/单；两者之比即回款完成率 ${pct(P.kpi.paid/P.kpi.contract*100)}。</li>
+    <li><b>首付比例</b>＝首期认款金额 ÷ 合同总金额，仅对合同额＞0 且首期有值的单计算；图表用<b>中位数</b>，避免个别极端值拉偏。</li>
+
+    <h4>付款能力四档怎么分</h4>
+    <li><b>全款</b>＝「款项周期」字段为「全款」，${fmt(P.tiers[0].n)} 单。</li>
+    <li><b>首付≥90%</b>＝款项周期为「分期」且首付比例 ≥ 0.9，${fmt(P.tiers[1].n)} 单。</li>
+    <li><b>首付50–90%</b>＝分期且 0.5 ≤ 首付比例 &lt; 0.9，${fmt(P.tiers[2].n)} 单。</li>
+    <li><b>首付&lt;50%</b>＝分期且首付比例 &lt; 0.5，${fmt(P.tiers[3].n)} 单。<b>切点取 50% 而非 70%</b>，是因为按 70% 切中间档只有 20 单，趋势会失真。</li>
+    <li>另有 ${fmt(P.tiers[4]?P.tiers[4].n:0)} 单未填款项周期，计入总量但不进任何档位。</li>
+
+    <h4>三项读数注意</h4>
+    <li><b>分层趋势要配合样本数看。</b>「首付≥90%」每月仅 1–4 单，图上用空心点标出样本＜5 的月份，波动主要来自个案而非趋势。</li>
+    <li><b>实付口径含账龄差异。</b>实付金额是「截至目前的累计支付」，近月成交的单还没来得及付完，实付客单价天然偏低；跨月比较看完成率更有意义。</li>
+    <li><b>10 月未完整。</b>成交截至 ${P.meta.last_date}，10 月仅 ${P.month[9].n} 单，客单价与完成率均不宜与整月直接对比。</li>
+
+    <h4>数据来源</h4>
+    <li>订单表_2026.1-2026.9.xlsx（订单导出明细）＋ 订单表_2026.10.xlsx，原始 ${fmt(P.meta.raw_rows)} 行。</li>
+    <li>未使用「回款导出明细」工作表——该表全部仅 2 行，无法计算回款周期；未使用「客户星级」——一星占 94.5%，无区分度。</li>
+    <li>本页为静态快照，数据更新需重新生成，制表时间 ${P.meta.generated_at}。</li>
+  `;
+  $('#noteH').onclick=()=>{
+    const b=$('#noteB'); b.classList.toggle('open');
+    $('#noteC').textContent = b.classList.contains('open')?'收起':'展开';
+  };
+}
+
+$('#mWin').textContent = P.meta.window;
+$('#mLast').textContent = P.meta.last_date || '—';
+$('#mGen').textContent = P.meta.generated_at;
+renderSummary(); renderKPI(); renderA(); renderB(); renderC(); renderD(); renderE(); renderHeat(); renderTables(); renderNotes();
+</script>
+
+<style>
+#anon-badge{position:fixed;right:12px;bottom:12px;z-index:99999;font:500 11px/1.6 -apple-system,
+"Segoe UI","Microsoft YaHei",sans-serif;color:#5B6572;background:rgba(255,255,255,.92);
+border:1px solid #E6E8EC;border-radius:999px;padding:3px 10px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+@media print{#anon-badge{display:none}}
+</style>
+<div id="anon-badge">示例数据 · 已脱敏</div>
+</body>
+</html>

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2026–2027 业绩预测（三情景）</title>
+__CSS__
+<style>
+.summary{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);
+  padding:17px 20px 15px;margin-bottom:15px}
+.summary .sh{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:11px}
+.summary .sh .t{font-size:13.5px;font-weight:650;letter-spacing:-.2px}
+.summary .sh .s{font-size:11.5px;color:var(--t3)}
+.summary ol{list-style:none;display:grid;gap:9px}
+.summary li{display:flex;gap:9px;font-size:12.5px;line-height:1.72;color:var(--t2)}
+.summary li .n{flex:0 0 auto;width:16px;height:16px;border-radius:4px;background:var(--blue-l);color:#2445B8;
+  font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:3px}
+.summary li b{color:var(--t1);font-weight:650}
+.verdict{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0 4px}
+.vc{border:1px solid var(--line);border-radius:10px;padding:13px 15px;background:#fff}
+.vc .lab{font-size:11px;color:var(--t3);margin-bottom:6px}
+.vc .val{font-size:24px;font-weight:700;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1.1}
+.vc .u{font-size:11.5px;font-weight:600;margin-left:3px;color:var(--t3)}
+.vc .sub{font-size:10.8px;color:var(--t3);margin-top:6px;line-height:1.5}
+.vc.mid .val{color:#2F5BEA}
+.vc.warn .val{color:#B4472F}
+.vc.ok .val{color:#0E7A5F}
+.callout{border-left:3px solid #2F5BEA;background:#F6F8FE;border-radius:0 8px 8px 0;
+  padding:12px 15px;margin:12px 0;font-size:12.3px;line-height:1.75;color:var(--t2)}
+.callout b{color:var(--t1)}
+.callout.warn{border-left-color:#C9A46B;background:#FCF9F2}
+.callout.red{border-left-color:#B4472F;background:#FDF5F2}
+.cap{font-size:10.8px;color:var(--t3);margin-top:7px;line-height:1.6}
+.lg{display:flex;gap:14px;font-size:11px;color:var(--t3);align-items:center}
+.lg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+table.dt td.num,table.dt th.num{text-align:right;font-variant-numeric:tabular-nums}
+table.dt tr.hl td{background:#F4F7FF;font-weight:650}
+table.dt .dim{color:#8C96A3}
+.mx td{text-align:center;padding:6px 4px;font-variant-numeric:tabular-nums;font-size:11.5px;border:1px solid #EEF0F4}
+.mx th{text-align:center;font-size:11px;font-weight:600;color:var(--t3);padding:6px 4px;border:1px solid #EEF0F4}
+.mx td.hit{font-weight:700;color:#fff;background:#2F5BEA}
+.mx td.near{font-weight:650;color:#1F3A6E;background:#DDE7FF}
+.tblwrap{max-height:none}
+table.dt td{padding:7px 10px}
+table.dt th{padding:8px 10px}
+@media(max-width:1180px){.verdict{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1><span class="dot"></span>业绩预测 · 2026Q4 与 2027Q1</h1>
+    <div class="sub">
+      <span>观测期 <b>2026.1–10</b></span>
+      <span>数据截至 <b id="mCut"></b></span>
+      <span>预测区间 <b>2026.11–2027.3</b></span>
+      <span>情景 <b>悲观 / 中性 / 乐观</b></span>
+    </div>
+  </div>
+  <div class="pill">金额单位 <b>万元</b></div>
+</header>
+
+<div class="summary">
+  <div class="sh"><span class="t">核心结论</span><span class="s" id="sumScope">收入表「业绩金额」口径 · 含全部款项</span></div>
+  <ol id="sumList"></ol>
+  <div class="verdict" id="verdict"></div>
+</div>
+
+<h2>一、全年已经定型，但季度内的斜率差 2 倍<div class="line"></div></h2>
+<div class="panel">
+  <div class="ptitle">月度业绩：实际 + 三情景
+    <span class="s" id="fanNote"></span></div>
+  <div id="chFan"></div>
+  <div class="cap">柱＝实际业绩（10 月为 27 天折算值 <b id="octFull"></b> 万元，已入账 <b id="octRec"></b> 万元）；虚线＝三情景预测，浅色带＝悲观到乐观的区间。竖线右侧为预测期。</div>
+</div>
+
+<div class="grid c2" style="margin-top:14px">
+  <div class="panel">
+    <div class="ptitle">约见量是三情景的唯一分岔口
+      <span class="s">柱＝客场约见 · 线＝成交率</span></div>
+    <div id="chMeet"></div>
+    <div class="cap">约见按 7–10 月线性趋势外推并阻尼（φ=0.75），设下限 客场 35 / 主场 5 场。预测段成交率取中性情景。</div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">业绩几乎等于新接认款
+      <span class="s">月度款项构成</span></div>
+    <div id="chStack"></div>
+    <div class="cap">1–9 月新接占 <b id="newShare"></b>%，中期尾款＋新增户＋其他合计仅 <b id="resShare"></b>%。所以预测只需盯住新签这一个变量。</div>
+  </div>
+</div>
+
+<h2>二、逐月预测：11 月 251 / 385 / 552 万元<div class="line"></div></h2>
+<div class="tblwrap"><table class="dt" id="tblFc"></table></div>
+<div class="callout" id="fcNote"></div>
+
+<h2>三、要守住 600 万/月，客场约见得回到 65–90 场<div class="line"></div></h2>
+<div class="grid c2e">
+  <div class="panel">
+    <div class="ptitle">业绩矩阵<span class="s">行＝成交率 · 列＝客场约见场次</span></div>
+    <div id="mxWrap"></div>
+    <div class="cap">假设主场 5 场、主场成交率 <b id="mxRh"></b>%、单均 客 <b id="mxAk"></b> 万 / 主 <b id="mxAh"></b> 万、认款率 <b id="mxRec"></b>%、非新接 <b id="mxNn"></b>%。深蓝＝达到 600 万。</div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">保 600 万所需客场约见<span class="s">按各情景成交率</span></div>
+    <div id="needWrap"></div>
+    <div class="cap">当前 10 月客场约见 53 场、中性成交率下只值 <b id="curVal"></b> 万元。缺口不是"再努力一点"，而是量级差。</div>
+  </div>
+</div>
+
+<h2>四、哪个变量最要命<div class="line"></div></h2>
+<div class="tblwrap"><table class="dt" id="tblSens"></table></div>
+<div class="callout warn" id="sensNote"></div>
+
+<h2>五、模型可信度<div class="line"></div></h2>
+<div class="tblwrap"><table class="dt" id="tblBack"></table></div>
+<div class="callout red" id="backNote"></div>
+
+<h2>模型假设与口径<div class="line"></div></h2>
+<div class="notes">
+  <div class="note-h" id="noteH"><span class="t">计算链路 · 参数来源 · 五条假设 · 已知局限</span><span class="c" id="noteC">展开</span></div>
+  <div class="note-b" id="noteB"></div>
+</div>
+
+</div>
+
+<script>
+const P = __PAYLOAD__;
+const $ = s => document.querySelector(s);
+const C = {blue:'#2F5BEA', violet:'#7C5CD6', teal:'#0FA3A3', amber:'#D9942B',
+           green:'#0E9F6E', red:'#B4472F', navy:'#1F3A6E', gray:'#8C96A3', grid:'#E8EBF0'};
+const mono = 'font-variant-numeric:tabular-nums';
+const f1 = v => v==null ? '—' : v.toFixed(1);
+const f0 = v => v==null ? '—' : Math.round(v).toLocaleString();
+const pc = v => v==null ? '—' : v.toFixed(1)+'%';
+const SC = ['悲观','中性','乐观'];
+const SC_C = {'悲观':C.red, '中性':C.blue, '乐观':C.green};
+
+// 预测月份序列
+const FYM = ['2026-11','2026-12','2027-01','2027-02','2027-03'];
+const FML = ['11月','12月','1月','2月','3月'];
+const byKey = {};
+P.fc.forEach(r => { (byKey[r.ym] = byKey[r.ym] || {})[r.scen] = r; });
+
+function nicemax(v){
+  if(v<=0) return 100;
+  const e = Math.pow(10, Math.floor(Math.log10(v)));
+  const n = v/e;
+  return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*e;
+}
+
+// ── 图1 业绩扇形 ──
+(function(){
+  const W=1010,H=330,pl=66,pr=78,pt=26,pb=46, iw=W-pl-pr, ih=H-pt-pb;
+  const acts = P.actual.map(a=>a.revenue);
+  acts[9] = P.meta.oct_full;                 // 10 月用折算值
+  const labels = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月'];
+  const all = acts.concat([]);
+  const fcVals = {悲观:[], 中性:[], 乐观:[]};
+  FYM.forEach(ym => SC.forEach(s => fcVals[s].push(byKey[ym][s].revenue)));
+  const maxY = nicemax(Math.max(...acts, ...fcVals.乐观)*1.08);
+  const N = 15;
+  const bw = iw/N*0.56;
+  const x = i => pl + bw/2 + (iw-bw)*i/(N-1);
+  const y = v => pt + ih*(1 - v/maxY);
+
+  let s = '';
+  // 网格
+  for(let t=0; t<=4; t++){
+    const v = maxY*t/4;
+    s += `<line x1="${pl}" x2="${pl+iw}" y1="${y(v)}" y2="${y(v)}" stroke="${C.grid}"/>`;
+    s += `<text x="${pl-8}" y="${y(v)+4}" text-anchor="end" font-size="10" fill="#98A1AD" style="${mono}">${Math.round(v)}</text>`;
+  }
+  // 2027 分界
+  s += `<line x1="${x(11.5)}" x2="${x(11.5)}" y1="${pt-14}" y2="${pt+ih}" stroke="#C9CFD9" stroke-dasharray="3 3"/>`;
+  s += `<text x="${x(11.5)+5}" y="${pt-4}" font-size="10" fill="#98A1AD">2027 →</text>`;
+
+  // 区间带（从 10 月接入）
+  const up = [[x(9), y(acts[9])]].concat(fcVals.乐观.map((v,i)=>[x(10+i), y(v)]));
+  const dn = [[x(9), y(acts[9])]].concat(fcVals.悲观.map((v,i)=>[x(10+i), y(v)]));
+  s += `<polygon points="${up.concat(dn.slice().reverse()).map(p=>p.join(',')).join(' ')}" fill="rgba(47,91,234,.10)"/>`;
+
+  // 实际柱
+  acts.forEach((v,i)=>{
+    const inc = (i===9);
+    const hgt = pt+ih-y(v);
+    s += `<rect x="${x(i)-bw/2}" y="${y(v)}" width="${bw}" height="${hgt}" rx="2"
+        fill="${inc?'#B9C6E8':C.blue}" opacity="${inc?.75:1}"/>`;
+    if(hgt > 34)
+      s += `<text x="${x(i)}" y="${y(v)+13}" text-anchor="middle" font-size="9"
+          fill="${inc?'#5B6572':'#fff'}" style="${mono}">${Math.round(v)}</text>`;
+    else
+      s += `<text x="${x(i)}" y="${y(v)-6}" text-anchor="middle" font-size="9.5"
+          fill="#5B6572" style="${mono}">${Math.round(v)}</text>`;
+  });
+  // 预测虚线
+  SC.forEach(sc=>{
+    const pts = [[x(9), y(acts[9])]].concat(fcVals[sc].map((v,i)=>[x(10+i), y(v)]));
+    s += `<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none"
+        stroke="${SC_C[sc]}" stroke-width="${sc==='中性'?2.6:1.7}"
+        stroke-dasharray="${sc==='中性'?'0':'5 3'}" stroke-linejoin="round" opacity="${sc==='中性'?1:.8}"/>`;
+    fcVals[sc].forEach((v,i)=>{
+      s += `<circle cx="${x(10+i)}" cy="${y(v)}" r="${sc==='中性'?3.6:2.6}" fill="#fff"
+          stroke="${SC_C[sc]}" stroke-width="${sc==='中性'?2:1.6}"/>`;
+    });
+    s += `<text x="${x(14)+9}" y="${y(fcVals[sc][4])+3.5}" font-size="10" font-weight="600"
+        fill="${SC_C[sc]}" text-anchor="start">${sc} ${Math.round(fcVals[sc][4])}</text>`;
+  });
+  // X 标签
+  labels.forEach((l,i)=>{
+    s += `<text x="${x(i)}" y="${pt+ih+18}" text-anchor="middle" font-size="10" fill="#8C96A3">${l}</text>`;
+  });
+  $('#chFan').innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${s}</svg>`;
+})();
+
+// ── 图2 约见 + 成交率 ──
+(function(){
+  const W=470,H=285,pl=50,pr=52,pt=24,pb=44, iw=W-pl-pr, ih=H-pt-pb;
+  const N=15;
+  const mk = P.actual.map(a=>a.meet_k);
+  const rt = P.actual.map(a=>a.rate);
+  const fq = P.trend['客场'].path;
+  const rk = P.per_neutral.rk;
+  const maxQ = nicemax(Math.max(...mk, ...fq)*1.20);
+  const bw = iw/N*0.52;
+  const x = i => pl + bw/2 + (iw-bw)*i/(N-1);
+  const yq = v => pt + ih*(1-v/maxQ);
+  const yr = v => pt + ih*(1-v/100);
+  let s='';
+  for(let t=0;t<=4;t++){
+    const v=maxQ*t/4;
+    s+=`<line x1="${pl}" x2="${pl+iw}" y1="${yq(v)}" y2="${yq(v)}" stroke="${C.grid}"/>`;
+    s+=`<text x="${pl-7}" y="${yq(v)+4}" text-anchor="end" font-size="9.5" fill="#98A1AD" style="${mono}">${Math.round(v)}</text>`;
+    s+=`<text x="${pl+iw+7}" y="${yr(t*25)+4}" font-size="9.5" fill="#B4842B" style="${mono}">${t*25}%</text>`;
+  }
+  // 65% 护栏（弱化，避免被误读成数据线）
+  s+=`<line x1="${pl}" x2="${pl+iw}" y1="${yr(65)}" y2="${yr(65)}" stroke="${C.red}"
+      stroke-dasharray="3 4" stroke-width="1.1" opacity=".45"/>`;
+  s+=`<text x="${pl+iw-2}" y="${yr(65)-4}" text-anchor="end" font-size="8.5"
+      fill="${C.red}" opacity=".75">65% 护栏</text>`;
+  // 2027 分界
+  s+=`<line x1="${x(9.5)}" x2="${x(9.5)}" y1="${pt-12}" y2="${pt+ih}" stroke="#C9CFD9" stroke-dasharray="3 3"/>`;
+  // 实际柱
+  mk.forEach((v,i)=>{
+    s+=`<rect x="${x(i)-bw/2}" y="${yq(v)}" width="${bw}" height="${pt+ih-yq(v)}" rx="2" fill="${C.blue}" opacity=".88"/>`;
+  });
+  // 预测柱
+  fq.forEach((v,i)=>{
+    s+=`<rect x="${x(10+i)-bw/2}" y="${yq(v)}" width="${bw}" height="${pt+ih-yq(v)}" rx="2"
+        fill="${C.blue}" opacity=".30"/>`;
+    s+=`<text x="${x(10+i)}" y="${yq(v)-5}" text-anchor="middle" font-size="8.5"
+        fill="#8C96A3" style="${mono}">${Math.round(v)}</text>`;
+  });
+  // 成交率：实际
+  const pts = rt.map((v,i)=>[x(i), yr(v)]);
+  s+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${C.amber}" stroke-width="2"/>`;
+  pts.forEach(p=>{ s+=`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#fff" stroke="${C.amber}" stroke-width="1.7"/>`; });
+  // 成交率：预测（水平虚线）
+  const fp = [[x(9), yr(rt[9])]].concat(fq.map((_,i)=>[x(10+i), yr(rk)]));
+  s+=`<polyline points="${fp.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${C.amber}"
+      stroke-width="1.6" stroke-dasharray="4 3" opacity=".65"/>`;
+  s+=`<text x="${x(12)}" y="${yr(rk)-7}" text-anchor="middle" font-size="8.5" fill="#B4842B">${rk}%</text>`;
+  s+=`<text x="${x(9)}" y="${yr(rt[9])-8}" text-anchor="middle" font-size="8.5"
+      fill="#fff" stroke="#fff" stroke-width="2.5" paint-order="stroke">${rt[9]}%</text>
+      <text x="${x(9)}" y="${yr(rt[9])-8}" text-anchor="middle" font-size="8.5" fill="#B4842B">${rt[9]}%</text>`;
+  // X 标签
+  ['1','2','3','4','5','6','7','8','9','10','11','12','1','2','3'].forEach((l,i)=>{
+    s+=`<text x="${x(i)}" y="${pt+ih+17}" text-anchor="middle" font-size="9" fill="#8C96A3">${l}</text>`;
+  });
+  s+=`<text x="${x(12)}" y="${pt+ih+30}" text-anchor="middle" font-size="8.5" fill="#B4BCC7">2027 年</text>`;
+  $('#chMeet').innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${s}</svg>`;
+})();
+
+// ── 图3 款项堆叠 ──
+(function(){
+  const W=470,H=285,pl=54,pr=16,pt=24,pb=44, iw=W-pl-pr, ih=H-pt-pb;
+  const N=P.rev_mon.length;
+  const cols=[['新接',C.blue],['新增户',C.teal],['中期尾款',C.violet],['其他',C.amber]];
+  const tot = P.rev_mon.map(r=>r['新接']+r['新增户']+r['中期尾款']+r['其他']);
+  const maxY = nicemax(Math.max(...tot)*1.1);
+  const bw = iw/N*0.50;
+  const x = i => pl + bw/2 + (iw-bw)*i/(N-1);
+  const y = v => pt + ih*(1-v/maxY);
+  let s='';
+  for(let t=0;t<=4;t++){
+    const v=maxY*t/4;
+    s+=`<line x1="${pl}" x2="${pl+iw}" y1="${y(v)}" y2="${y(v)}" stroke="${C.grid}"/>`;
+    s+=`<text x="${pl-7}" y="${y(v)+4}" text-anchor="end" font-size="9.5" fill="#98A1AD" style="${mono}">${Math.round(v)}</text>`;
+  }
+  P.rev_mon.forEach((r,i)=>{
+    let base=0;
+    cols.forEach(([k,c])=>{
+      const v=r[k];
+      if(v<=0) return;
+      const h=pt+ih-y(base)- (y(base+v)-y(base));
+      s+=`<rect x="${x(i)-bw/2}" y="${y(base+v)}" width="${bw}" height="${y(base)-y(base+v)}" fill="${c}" opacity=".92"/>`;
+      base+=v;
+    });
+    s+=`<text x="${x(i)}" y="${pt+ih+16}" text-anchor="middle" font-size="9.5" fill="#8C96A3">${r.mon}</text>`;
+  });
+  $('#chStack').innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${s}</svg>`;
+})();
+
+// ── 表1 逐月三情景 ──
+(function(){
+  let h = `<thead><tr><th style="width:88px">月份</th><th style="width:56px">情景</th>
+    <th class="num">客场约见</th><th class="num">主场约见</th>
+    <th class="num">合同额</th><th class="num">新接认款</th><th class="num">非新接</th>
+    <th class="num">业绩</th><th class="num">较 9 月</th></tr></thead><tbody>`;
+  FYM.forEach((ym,mi)=>{
+    const lab = ym;
+    SC.forEach((sc,si)=>{
+      const r = byKey[ym][sc];
+      const sep = P.actual[8].revenue;          // 2026 年 9 月，最后一个正常月
+      const mom = (r.revenue/sep-1)*100;
+      h += `<tr class="${sc==='中性'?'hl':''}">`;
+      if(si===0) h += `<td rowspan="3" style="vertical-align:middle;font-weight:600;
+          border-bottom:1px solid var(--line)">${lab}</td>`;
+      h += `<td style="color:${SC_C[sc]};font-weight:600">${sc}</td>
+        <td class="num">${f1(r.meet_k)}</td><td class="num">${f1(r.meet_h)}</td>
+        <td class="num">${f0(r.contract)}</td><td class="num">${f0(r.new_recog)}</td>
+        <td class="num">${f0(r.nonnew)}</td>
+        <td class="num" style="font-weight:650;color:${SC_C[sc]}">${f0(r.revenue)}</td>
+        <td class="num" style="color:${mom<0?'#0E7A5F':'#B4472F'}">${mom>=0?'+':''}${mom.toFixed(1)}%</td></tr>`;
+    });
+  });
+  h += `</tbody>`;
+  $('#tblFc').innerHTML = h;
+})();
+
+// ── 矩阵 ──
+(function(){
+  const Q = P.grid.q, R = P.grid.rate, rows = P.grid.rows;
+  let h = `<table class="mx" style="width:100%;border-collapse:collapse"><thead><tr><th>成交率＼约见</th>`;
+  Q.forEach(q => h += `<th>${q}</th>`);
+  h += `</tr></thead><tbody>`;
+  rows.forEach(r=>{
+    h += `<tr><th>${r.rate}%</th>`;
+    r.vals.forEach(v=>{
+      const cls = v>=600 ? 'hit' : (v>=520 ? 'near' : '');
+      h += `<td class="${cls}">${Math.round(v)}</td>`;
+    });
+    h += `</tr>`;
+  });
+  h += `</tbody></table>`;
+  $('#mxWrap').innerHTML = h;
+})();
+
+// ── 保 600 万所需约见 ──
+(function(){
+  let h = `<table class="dt"><thead><tr><th>情景</th><th class="num">成交率(客)</th>
+    <th class="num">需客场约见</th><th class="num">相对当前 53 场</th></tr></thead><tbody>`;
+  P.need600.forEach(r=>{
+    const gap = r.need_k ? (r.need_k/53-1)*100 : null;
+    h += `<tr><td>${r.scen}</td><td class="num">${r.rate_k}%</td>
+      <td class="num" style="font-weight:650">${r.need_k==null?'达不到':Math.round(r.need_k)}</td>
+      <td class="num" style="color:#B4472F">${gap==null?'—':(gap>0?'+':'')+gap.toFixed(0)+'%'}</td></tr>`;
+  });
+  h += `</tbody></table>`;
+  $('#needWrap').innerHTML = h;
+})();
+
+// ── 表3 敏感性 ──
+(function(){
+  let h = `<thead><tr><th>变动项</th><th class="num">11 月业绩</th>
+    <th class="num">12 月业绩</th><th class="num">11 月影响</th></tr></thead><tbody>`;
+  P.sens.forEach(r=>{
+    h += `<tr><td>${r.item}</td><td class="num">${f1(r.nov)}</td><td class="num">${f1(r.dec)}</td>
+      <td class="num" style="color:${r.delta<0?'#0E7A5F':'#B4472F'}">${r.delta>0?'+':''}${f1(r.delta)}</td></tr>`;
+  });
+  h += `</tbody>`;
+  $('#tblSens').innerHTML = h;
+})();
+
+// ── 表4 回测 ──
+(function(){
+  let h = `<thead><tr><th>原点</th><th>预测月</th><th>口径</th>
+    <th class="num">预测</th><th class="num">实际</th><th class="num">误差</th></tr></thead><tbody>`;
+  P.backtest.forEach(r=>{
+    h += `<tr><td>${r.origin} 月</td><td>${r.target} 月</td><td>${r.seg}约见</td>
+      <td class="num">${r.pred.toFixed(0)}</td><td class="num">${r.actual}</td>
+      <td class="num" style="color:${r.err>0?'#B4472F':'#0E7A5F'}">${r.err>0?'+':''}${r.err.toFixed(0)}</td></tr>`;
+  });
+  h += `</tbody>`;
+  $('#tblBack').innerHTML = h;
+})();
+
+// ── 结论 ──
+(function(){
+  const q19 = P.annual[1].q1_9, tot = P.annual[1].total;
+  const nov = byKey['2026-11'], dec = byKey['2026-12'];
+  const q1 = P.annual.map(a=>a.q1_2027);
+  const cur = P.meta.oct_full;
+  const H1avg = P.actual.slice(0,6).reduce((a,b)=>a+b.revenue,0)/6;
+  const Q4avg = (nov.中性.revenue+dec.中性.revenue)/2;
+  const L = [
+    `<b>全年落在 1.02–1.08 亿，差别不大</b>　1–9 月已锁定 <b>${f0(q19)} 万</b>（占中性全年 <b>${(q19/tot*100).toFixed(0)}%</b>），
+     再叠加 10 月折算 ${f0(P.meta.oct_full)} 万和 11–12 月，全年三情景为
+     <b>${f0(P.annual[0].total)} / ${f0(P.annual[1].total)} / ${f0(P.annual[2].total)} 万</b>，极差只有 ${f0(P.annual[2].total-P.annual[0].total)} 万。`,
+    `<b>但斜率差 2 倍以上</b>　11 月三情景 <b>${f0(nov.悲观.revenue)} / ${f0(nov.中性.revenue)} / ${f0(nov.乐观.revenue)} 万</b>，
+     中性 ${f0(nov.中性.revenue)} 万仅与 10 月折算 ${f0(cur)} 万持平，<b>意味着按当前趋势不会自然回升</b>。`,
+    `<b>2027Q1 才是真正的分水岭</b>　三情景 <b>${f0(q1[0])} / ${f0(q1[1])} / ${f0(q1[2])} 万</b>，
+     悲观与乐观相差 <b>${(q1[2]/q1[0]).toFixed(1)} 倍</b>。分岔几乎全在成交率能否从 10 月水平修复。`,
+    `<b>要守住 600 万/月，客场约见得回到 ${Math.round(P.need600[1].need_k)} 场</b>　中性成交率下 53 场只值
+     <b>${f0((53*P.per_neutral.per_k+5*P.per_neutral.per_h)*P.meta.factor)} 万</b>。
+     这也解释了为什么 9 月 61 场能做出 700 万、10 月 53 场只有 380 万。`
+  ];
+  $('#sumList').innerHTML = L.map((t,i)=>`<li><span class="n">${i+1}</span><div>${t}</div></li>`).join('');
+
+  const cards = [
+    {lab:'2026 全年（中性）', val:f0(P.annual[1].total), unit:'万元', cls:'mid',
+     sub:`区间 ${f0(P.annual[0].total)}–${f0(P.annual[2].total)} 万`},
+    {lab:'11–12 月合计（中性）', val:f0(nov.中性.revenue+dec.中性.revenue), unit:'万元', cls:'warn',
+     sub:`月均 ${f0((nov.中性.revenue+dec.中性.revenue)/2)} 万，与 10 月持平`},
+    {lab:'2027Q1（中性）', val:f0(q1[1]), unit:'万元', cls:'warn',
+     sub:`区间 ${f0(q1[0])}–${f0(q1[2])} 万，相差 ${(q1[2]/q1[0]).toFixed(1)} 倍`},
+    {lab:'月均业绩对比', val:`${Math.round(H1avg)} → ${Math.round(Q4avg)}`, unit:'万元', cls:'',
+     sub:`上半年月均 vs Q4 中性预测，降 ${(100-Q4avg/H1avg*100).toFixed(0)}%`},
+  ];
+  $('#verdict').innerHTML = cards.map(c=>`<div class="vc ${c.cls}"><div class="lab">${c.lab}</div>
+    <div class="val">${c.val}<span class="u">${c.unit}</span></div><div class="sub">${c.sub}</div></div>`).join('');
+
+  const q1_26 = P.actual.slice(0,3).reduce((a,b)=>a+b.revenue,0);
+  $('#fcNote').innerHTML = `「较 9 月」以 2026 年 9 月 ${f0(P.actual[8].revenue)} 万为基准——那是最后一个数据完整的正常月份。
+    读法：<b>中性情景的 11 月 ${f0(nov.中性.revenue)} 万，比 9 月的 701 万少了一半还多</b>，
+    因为客场约见从 61 场降到 45.5 场、成交率从 73.8% 降到 ${P.per_neutral.rk}%。两者同时发生，乘起来就是腰斩。
+    悲观情景假设 10 月的低成交率是真实的并延续，乐观情景假设它主要是录入截断。`;
+  $('#sensNote').innerHTML = `三个变量对 11 月业绩的弹性几乎一样（±10% 各带来 ±38.5 万），
+    说明<b>没有哪个"抓手"能单独救回来</b>：约见量与单均合同各 ±38.5 万、成交率 ±33.8 万，量级接近。
+    非新接系数影响更小（±17 万），因为它只占 16.5%。
+    <b>真正的杠杆只有一个：客场约见量。</b>`;
+  $('#backNote').innerHTML = `回测误差<b>全部为正</b>（预测高于实际），7 月做原点预测 9 月客场约见时高估了 20 场。
+    这说明<b>趋势外推在拐点处系统性偏乐观</b>——所以本报告的悲观情景不是"吓人"，而是回测误差的方向所指。`;
+
+  const ns = P.rev_mon.slice(0,9);
+  const newSum = ns.reduce((a,b)=>a+b['新接'],0);
+  const allSum = ns.reduce((a,b)=>a+b['新接']+b['新增户']+b['中期尾款']+b['其他'],0);
+  $('#newShare').textContent = (newSum/allSum*100).toFixed(1);
+  $('#resShare').textContent = (100-newSum/allSum*100).toFixed(1);
+  $('#mCut').textContent = P.meta.cut;
+  $('#octFull').textContent = f0(P.meta.oct_full);
+  $('#octRec').textContent = f0(P.meta.oct_recorded);
+  $('#fanNote').textContent = `截止 ${P.meta.cut}`;
+  $('#mxRh').textContent = P.per_neutral.rh;
+  $('#mxAk').textContent = P.params.avg_k;
+  $('#mxAh').textContent = P.params.avg_h;
+  $('#mxRec').textContent = P.meta.rec_rate;
+  $('#mxNn').textContent = P.meta.nonnew;
+  $('#curVal').textContent = f0((53*P.per_neutral.per_k+5*P.per_neutral.per_h)*P.meta.factor);
+})();
+
+// ── 说明区 ──
+(function(){
+  const m = P.meta, p = P.params;
+  const rec = P.rec_ratio.slice(2,9).map(r=>`${r.mon}月 ${r.ratio==null?'—':r.ratio+'%'}`).join(' · ');
+  $('#noteB').innerHTML = `
+    <h4>计算链路（每一层都可单独核）</h4>
+    <div class="flow">
+      <div class="nd"><b>1 约见量</b>客场 ${P.trend['客场'].base} 场<br>趋势 ${P.trend['客场'].slope}/月</div><span class="ar2">×</span>
+      <div class="nd"><b>2 成交率</b>成熟 ${p.rate_k}%<br>× 恢复系数 ${m.rho['中性']}%</div><span class="ar2">×</span>
+      <div class="nd"><b>3 单均合同</b>客场 ${p.avg_k} 万<br>主场 ${p.avg_h} 万</div><span class="ar2">×</span>
+      <div class="nd"><b>4 认款率</b>${m.rec_rate}%</div><span class="ar2">×</span>
+      <div class="nd"><b>5 非新接</b>× ${(1+m.nonnew/100).toFixed(3)}</div>
+    </div>
+
+    <h4>参数来源</h4>
+    <li><b>约见量</b>：取 7–10 月客场（78/86/61/53）与主场（27/17/11/10）做线性拟合，斜率 ${P.trend['客场'].slope} / ${P.trend['主场'].slope} 场每月；
+      向前外推时按 φ=${m.phi} 逐步衰减（越远越不敢外推），并设下限 客场 ${m.floor['客场']} / 主场 ${m.floor['主场']} 场。</li>
+    <li><b>成交率</b>：成熟水平取 5–9 月加权（客场 ${p.rate_k}%、主场 ${p.rate_h}%，区间 ${p.rate_k_range[0]}%–${p.rate_k_range[1]}%）。
+      但 10 月客场实录只有 30.2%，上一轮删失校正给出 <b>${m.oct_ht['低']}% / ${m.oct_ht['中']}% / ${m.oct_ht['高']}%</b>，
+      折算成恢复系数即 <b>${m.rho['悲观']}% / ${m.rho['中性']}% / ${m.rho['乐观']}%</b>——三情景的差别就来自这里。</li>
+    <li><b>单均合同</b>：7–10 月成交加权，客场 ${p.avg_k} 万、主场 ${p.avg_h} 万。10 月实际 9.9 万已在下降通道，故悲观再打 0.92。</li>
+    <li><b>认款率 ${m.rec_rate}%</b>：3–9 月「收入表新接认款 ÷ 订单表当月成交合同额」。月度值 ${rec}，波动来自跨月兑现，故取全期。</li>
+    <li><b>非新接系数 ${m.nonnew}%</b>：1–9 月（新增户＋中期尾款＋其他＋后期效果费＋续约）÷ 新接认款。近 3 个月 ${m.nonnew_recent}%，本模型取保守的 ${m.nonnew}%。</li>
+    <li><b>季节性</b>：2027 年 2 月春节（2/6）约见打 0.85，3 月回补 1.05；1 月不做调整，但<b>不复制 2026 年 1 月的 312 场主场异动</b>。</li>
+
+    <h4>五条假设，以及被推翻的方式</h4>
+    <li><b>① 业绩≈当月新签。</b>实证：新接认款 72–99% 与成交同月。若跨月兑现比例上升，当期业绩会被低估、次月被高估。</li>
+    <li><b>② 成交率停留在 10 月校正水平。</b>这是中性情景最强的假设。若 11 月重导数据后 10 月成交率跳回 70%+，应直接采用乐观情景。</li>
+    <li><b>③ 约见按趋势外推且不再恶化。</b>下限 35 场是人为设定。若线索入库继续下滑（9 月已 6,612 条、较 1 月 −72%），实际会破下限。</li>
+    <li><b>④ 单均合同不崩。</b>10 月客场 9.9 万已是 7 个月最低。若分期政策继续收紧，单均还会往下。</li>
+    <li><b>⑤ 无非经常项。</b>10 月「其他」科目异常偏高（116.5 万，1–9 月合计才 89.4 万），未计入预测；若属一次性收入，不影响后续月份判断。</li>
+
+    <h4>已知局限</h4>
+    <li><b>10 月业绩是不完整月</b>：收入表仅到 10/27，本报告用 ${m.oct_days} 天折算为 ${m.oct_full} 万元（已入账 ${m.oct_recorded} 万元）。这一项占全年 3.6%，折算误差 5% 只影响全年 0.2%。</li>
+    <li><b>回测样本只有 8 个点</b>，且跨越了 8→9 月的结构性拐点，误差方向明确（偏乐观），幅度仅供参考。</li>
+    <li><b>2027 年 1–3 月没有任何业务计划输入</b>，纯趋势外推。一旦 11–12 月投放恢复，应立即用实际数据替换。</li>
+    <li><b>本模型不含退费冲减</b>：退费 965 笔在「给数据组结案/退费/返点」表中，未并入业绩口径，与既有看板保持一致。</li>
+  `;
+  $('#noteH').onclick = () => {
+    const b = $('#noteB'); b.classList.toggle('open');
+    $('#noteC').textContent = b.classList.contains('open') ? '收起' : '展开';
+  };
+})();
+</script>
+</body>
+</html>

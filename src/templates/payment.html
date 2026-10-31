@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>客户支付能力与客单价趋势 · 2026.1–10</title>
+__CSS__
+<style>
+/* ── 本页补充 ── */
+.duo{margin-top:9px}
+.duo .row{display:flex;align-items:center;gap:9px;margin-bottom:9px;font-size:12px}
+.duo .row .nm{width:86px;color:var(--t2);flex:0 0 auto;text-align:right}
+.duo .barwrap{flex:1;height:15px;background:#F3F5F9;border-radius:3px;position:relative;overflow:hidden}
+.duo .barwrap i{position:absolute;left:0;top:0;height:100%;border-radius:3px;display:block}
+.duo .v{width:78px;flex:0 0 auto;text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.duo .sub{width:66px;flex:0 0 auto;color:var(--t3);font-size:11px}
+@media print{
+  @page{size:1069px 748px;margin:0}
+  html,body{width:1068px!important;max-width:1068px!important;overflow-x:hidden}
+  .wrap{width:1068px!important;max-width:1068px!important;padding:0!important}
+  .card{break-inside:avoid;page-break-inside:avoid}
+  .summary,.notes,.alert{break-inside:avoid;page-break-inside:avoid}
+  .crumb,.seg,.kpi .nav,.more{display:none!important}
+  h2{margin:6px 0 4px}
+  .tblwrap{max-height:none;overflow:visible}
+  thead th{position:static}
+  .grid.c2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
+  .k5{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  .note-b{display:block!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1><span class="dot"></span>客户支付能力与客单价趋势</h1>
+    <div class="sub">
+      <span>观察期 <b id="mWin"></b></span>
+      <span>数据截至 <b id="mLast"></b></span>
+      <span>口径 <b>订单表 · 按成交时间</b></span>
+      <span>制表 <b id="mGen"></b></span>
+    </div>
+  </div>
+  <div class="pill">金额单位 <b>万元</b></div>
+</header>
+
+<div class="summary">
+  <div class="sh"><span class="t">核心结论</span><span class="s" id="sumScope">2026.1–10 成交 · 全部区域</span></div>
+  <ol id="sumList"></ol>
+  <div class="foot" id="sumFoot"></div>
+</div>
+
+<div class="grid k5" id="kpiGrid"></div>
+
+<h2>客单价 与 首付能力 <span class="s">柱＝合同客单价（万元/单）｜线＝首付比例中位数（右轴）</span><div class="line"></div></h2>
+<div class="grid c2">
+  <div class="card panel">
+    <div class="ptitle"><span>合同客单价 × 首付比例（月度）</span>
+      <div class="legend">
+        <span><i style="background:#2F5BEA"></i>合同客单价</span>
+        <span><i style="background:#E8952A;border-radius:50%"></i>首付比中位</span>
+      </div>
+    </div>
+    <div id="chA"></div>
+  </div>
+  <div class="card panel">
+    <div class="ptitle"><span>合同客单价 vs 实付客单价</span>
+      <div class="legend"><span id="doneNote"></span></div>
+    </div>
+    <div id="chB"></div>
+  </div>
+</div>
+
+<h2>付款能力结构 <span class="s">四档：全款 / 首付≥90% / 首付50–90% / 首付&lt;50%</span><div class="line"></div></h2>
+<div class="grid c2">
+  <div class="card panel">
+    <div class="ptitle"><span>各档单数占比 vs 合同额占比</span>
+      <div class="legend">
+        <span><i style="background:#2F5BEA"></i>单数占比</span>
+        <span><i style="background:#7C5CD6"></i>合同额占比</span>
+      </div>
+    </div>
+    <div id="chC" class="duo"></div>
+    <div id="chCfoot" style="font-size:11px;color:#8C96A3;margin-top:6px;line-height:1.6"></div>
+  </div>
+  <div class="card panel">
+    <div class="ptitle"><span>合同额分档 × 分期率</span>
+      <div class="legend"><span>柱＝分期率｜柱下＝该档单数</span></div>
+    </div>
+    <div id="chD"></div>
+  </div>
+</div>
+
+<h2>分层客单价走势 <span class="s">各付款能力档的合同客单价（万元/单）· 空心点＝该月样本＜5 单</span><div class="line"></div></h2>
+<div class="card panel">
+  <div class="ptitle"><span>客单价（万元/单）</span><div class="legend" id="tierLegend"></div></div>
+  <div id="chE"></div>
+</div>
+
+<h2>支付能力 × 月份 <span class="s">单元格为该档当月合同客单价（万元/单）</span><div class="line"></div></h2>
+<div class="card panel">
+  <div class="ptitle"><span>客单价矩阵</span></div>
+  <div style="overflow:auto;margin-top:8px"><table class="heat" id="heatTbl"></table></div>
+</div>
+
+<h2>明细 <span class="s">金额单位：万元</span><div class="line"></div></h2>
+<div class="grid c2e">
+  <div class="card panel">
+    <div class="ptitle"><span>付款能力档位明细</span></div>
+    <div class="tblwrap" style="margin-top:9px"><table id="tbl1"></table></div>
+  </div>
+  <div class="card panel">
+    <div class="ptitle"><span>月度明细</span></div>
+    <div class="tblwrap" style="margin-top:9px"><table id="tbl2"></table></div>
+  </div>
+</div>
+
+<h2>数据说明与计算口径 <span class="s">影响数字解读的关键事项</span><div class="line"></div></h2>
+<div class="alert">
+  <svg class="ico" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 2.6 18 16.4H2L10 2.6Z" stroke-linejoin="round"/><path d="M10 7.6v4M10 14.2v.6" stroke-linecap="round"/></svg>
+  <div class="txt"><b>请先看这条：</b><span id="alertTxt"></span>
+    <button class="more" id="alertBtn"></button>
+    <div class="detail" id="alertDetail"></div>
+  </div>
+</div>
+<div class="notes">
+  <div class="note-h" id="noteH"><span class="t">指标定义 · 分档规则 · 数据来源</span><span class="c" id="noteC">展开</span></div>
+  <div class="note-b" id="noteB"></div>
+</div>
+
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+const P = __PAYLOAD__;
+const $ = s => document.querySelector(s);
+const fmt = (n,d=0)=> n==null?'—':Number(n).toLocaleString('zh-CN',{minimumFractionDigits:d,maximumFractionDigits:d});
+const wan = n => n==null?'—':(n/10000).toLocaleString('zh-CN',{minimumFractionDigits:1,maximumFractionDigits:1});
+const pct = n => n==null?'—':n.toFixed(1)+'%';
+const C = {blue:'#2F5BEA', amber:'#E8952A', teal:'#0FA3A3', violet:'#7C5CD6',
+           green:'#0E9F6E', grey:'#D9DEE7', red:'#D64545', ink:'#141A22'};
+const TIER_C = {'全款':'#2F5BEA','首付≥90%':'#0E9F6E','首付50-90%':'#E8952A','首付<50%':'#D64545'};
+const TIERS = P.meta.tiers.filter(t=>t!=='未标注');
+const MONTHS = P.month.map(m=>m.mon);
+
+function niceMax(v, ticks=4){
+  if(!(v>0)) return 1;
+  const raw=v/ticks, mag=Math.pow(10, Math.floor(Math.log10(raw))), n=raw/mag;
+  const step = n<=1?1 : n<=1.5?1.5 : n<=2?2 : n<=2.5?2.5 : n<=3?3 : n<=4?4 : n<=5?5 : n<=6?6 : n<=8?8 : 10;
+  return step*mag*ticks;
+}
+
+const tip = $('#tip');
+function showTip(e,html){
+  tip.innerHTML=html; tip.classList.add('on');
+  const r=tip.getBoundingClientRect();
+  let x=e.clientX+14, y=e.clientY-r.height-10;
+  if(x+r.width>innerWidth-8) x=e.clientX-r.width-14;
+  if(y<8) y=e.clientY+16;
+  tip.style.left=x+'px'; tip.style.top=y+'px';
+}
+const hideTip=()=>tip.classList.remove('on');
+document.addEventListener('mouseleave',hideTip);
+function bindTips(sel){
+  document.querySelectorAll(sel+' [data-t]').forEach(el=>{
+    el.addEventListener('mouseenter',e=>showTip(e, el.dataset.t.split('|').map((s,i)=> i===0?`<b>${s}</b>`:s).join('<br>')));
+    el.addEventListener('mousemove',e=>showTip(e, el.dataset.t.split('|').map((s,i)=> i===0?`<b>${s}</b>`:s).join('<br>')));
+    el.addEventListener('mouseleave',hideTip);
+  });
+}
+
+/* ── 核心结论 ── */
+function renderSummary(){
+  const k = P.kpi;
+  const ti = {}; P.tiers.forEach(t=>ti[t.tier]=t);
+  const full = ti['全款'], low = ti['首付<50%'];
+  const mBy = {}; P.month.forEach(m=>mBy[m.mon]=m);
+  const m1 = mBy[1], peakM = P.month.slice().filter(m=>m.complete).sort((a,b)=>b.arpu_contract-a.arpu_contract)[0];
+  const minDown = P.month.slice().filter(m=>m.complete&&m.down_ratio!=null).sort((a,b)=>a.down_ratio-b.down_ratio)[0];
+  const maxDown = P.month.slice().filter(m=>m.complete&&m.down_ratio!=null).sort((a,b)=>b.down_ratio-a.down_ratio)[0];
+  const done = k.paid/k.contract*100;
+  const lateVals = P.month.filter(m=>m.mon>=8 && m.complete && m.down_ratio!=null).map(m=>m.down_ratio).sort((a,b)=>a-b);
+  const late = [lateVals[0], lateVals[lateVals.length-1]];
+
+  const items = [
+    `<b>规模与价格</b>　2026.1–10 成交 <b>${fmt(k.n)} 单</b>，合同额 <b>${wan(k.contract)} 万元</b>，合同客单价 <b>${fmt(k.arpu_contract)} 元/单</b>；实际收款 <b>${wan(k.paid)} 万元</b>，实付客单价 ${fmt(k.arpu_paid)} 元/单，<b>整体回款完成率 ${pct(done)}</b>。`,
+    `<b>客单价怎么变的</b>　合同客单价由 1 月 ${wan(m1.arpu_contract)} 万元/单升至 ${peakM.mon} 月 <b>${wan(peakM.arpu_contract)} 万元/单</b>（${(peakM.arpu_contract/m1.arpu_contract).toFixed(1)} 倍），8 月起回落至 10.6–12.6 万元。`,
+    `<b>同期首付能力在退</b>　首付比例中位数由 ${maxDown.mon} 月 <b>${maxDown.down_ratio.toFixed(2)}</b> 降至 ${minDown.mon} 月 <b>${minDown.down_ratio.toFixed(2)}</b>，分期率同区间由 ${mBy[maxDown.mon].install_share.toFixed(1)}% 升至 ${mBy[minDown.mon].install_share.toFixed(1)}%；8 月后首付比回升至 <b>${late[0].toFixed(2)}–${late[1].toFixed(2)}</b>，客单价同步回落。<b>客单价的上涨，有一部分是靠放宽付款条件换来的。</b>`,
+    `<b>大单客户首付反而低</b>　首付＜50% 的 ${low.n} 单只占单数 ${pct(low.n_share)}，却贡献合同额 ${pct(low.contract_share)}，客单价 <b>${fmt(low.arpu_contract)} 元</b>，是${full.tier}客户（${fmt(full.arpu_contract)} 元）的 ${(low.arpu_contract/full.arpu_contract).toFixed(1)} 倍。`
+  ];
+  $('#sumList').innerHTML = items.map((t,i)=>`<li><span class="n">${i+1}</span><div>${t}</div></li>`).join('');
+  $('#sumFoot').innerHTML = `
+    <span>分期 ${fmt(k.install_share)}% 的单子</span>
+    <span>首付比中位 ${k.down_ratio.toFixed(2)}</span>
+    <span>有效样本 ${fmt(k.n_valid)} 单（合同额＞0）</span>
+    <span>数据截至 ${P.meta.last_date}</span>`;
+}
+
+/* ── KPI ── */
+function renderKPI(){
+  const k = P.kpi;
+  const done = k.paid/k.contract*100;
+  const cards = [
+    {lab:'成交单数', val:fmt(k.n), unit:'单', color:'var(--blue)',
+     foot:`有效样本 ${fmt(k.n_valid)} 单（合同额＞0）`},
+    {lab:'合同额', val:wan(k.contract), unit:'万元', color:'var(--violet)',
+     foot:`实际收款 ${wan(k.paid)} 万元`},
+    {lab:'合同客单价', val:fmt(k.arpu_contract), unit:'元', color:'var(--teal)',
+     foot:'合同总金额 ÷ 有效单数'},
+    {lab:'实付客单价', val:fmt(k.arpu_paid), unit:'元', color:'var(--amber)',
+     foot:`回款完成率 ${pct(done)} · 支付金额 ÷ 有效单数`},
+    {lab:'分期单占比', val:fmt(k.install_share,1), unit:'%', color:'var(--red)',
+     foot:`首付比中位 ${k.down_ratio.toFixed(2)} · 全款 ${fmt(100-k.install_share,1)}%`},
+  ];
+  $('#kpiGrid').innerHTML = cards.map(k=>`
+    <div class="card kpi">
+      <div class="lab"><i style="background:${k.color}"></i>${k.lab}</div>
+      <div class="valrow"><div class="val">${k.val}${k.unit?`<small>${k.unit}</small>`:''}</div></div>
+      <div class="foot">${k.foot}</div>
+    </div>`).join('');
+}
+
+/* ── 图 A：合同客单价 × 首付比 ── */
+function renderA(){
+  const rows = P.month;
+  const W=640,H=310,pl=48,pr=50,pt=18,pb=36, iw=W-pl-pr, ih=H-pt-pb;
+  const maxA = niceMax(Math.max(...rows.map(r=>r.arpu_contract))/10000);
+  const yL = v => pt+ih-(v/10000)/maxA*ih;
+  const yR = r => pt+ih-r*ih;
+  const step=iw/rows.length, bw=Math.min(40,step*0.5), cx=i=>pl+step*(i+0.5);
+
+  let g='';
+  for(let i=0;i<=4;i++){
+    const v=maxA/4*i, yy=yL(v*10000);
+    g+=`<line class="gridline" x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}"/>`;
+    g+=`<text class="tick" x="${pl-8}" y="${yy+3.5}" text-anchor="end">${v.toFixed(0)}</text>`;
+    g+=`<text class="tick" x="${W-pr+8}" y="${yy+3.5}" text-anchor="start">${Math.round(i*25)}%</text>`;
+  }
+  rows.forEach((d,i)=>{
+    const h=Math.max(1, pt+ih-yL(d.arpu_contract));
+    g+=`<rect class="bar" x="${cx(i)-bw/2}" y="${yL(d.arpu_contract)}" width="${bw}" height="${h}"
+        fill="${d.complete?C.blue:'#B9C6E8'}" rx="3"
+        data-t="${d.mon}月|合同客单价 ${fmt(d.arpu_contract)} 元/单|合同额 ${wan(d.contract)} 万元|单数 ${d.n}"/>`;
+    g+=`<text class="tick" x="${cx(i)}" y="${H-12}" text-anchor="middle">${d.mon}月</text>`;
+  });
+  const pts = rows.filter(d=>d.down_ratio!=null).map(d=>[cx(rows.indexOf(d)), yR(d.down_ratio)]);
+  g+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${C.amber}" stroke-width="2.2" stroke-linejoin="round"/>`;
+  rows.forEach((d,i)=>{
+    if(d.down_ratio==null) return;
+    g+=`<circle class="bar" cx="${cx(i)}" cy="${yR(d.down_ratio)}" r="3.6" fill="#fff" stroke="${C.amber}" stroke-width="2"
+        data-t="${d.mon}月|首付比中位 ${d.down_ratio.toFixed(2)}|分期率 ${d.install_share.toFixed(1)}%|单数 ${d.n}"/>`;
+  });
+  // 渐变分界：标注首付比低谷
+  const low = rows.filter(d=>d.complete&&d.down_ratio!=null).sort((a,b)=>a.down_ratio-b.down_ratio)[0];
+  if(low){
+    g+=`<line x1="${cx(rows.indexOf(low))}" x2="${cx(rows.indexOf(low))}" y1="${pt}" y2="${pt+ih}"
+        stroke="${C.red}" stroke-width="1" stroke-dasharray="3 3" opacity=".35"/>`;
+    g+=`<text class="tick" x="${cx(rows.indexOf(low))+5}" y="${pt+11}" fill="${C.red}" font-size="10">首付低谷</text>`;
+  }
+  $('#chA').innerHTML=`<svg viewBox="0 0 ${W} ${H}">${g}</svg>`;
+  bindTips('#chA');
+}
+
+/* ── 图 B：合同 vs 实付客单价 ── */
+function renderB(){
+  const rows = P.month;
+  const W=480,H=322,pl=46,pr=16,pt=18,pb=54, iw=W-pl-pr, ih=H-pt-pb;
+  const maxV = niceMax(Math.max(...rows.map(r=>Math.max(r.arpu_contract,r.arpu_paid)))/10000);
+  const y = v => pt+ih-(v/10000)/maxV*ih;
+  const step=iw/rows.length, cx=i=>pl+step*(i+0.5);
+  let g='';
+  for(let i=0;i<=4;i++){
+    const v=maxV/4*i, yy=y(v*10000);
+    g+=`<line class="gridline" x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}"/>`;
+    g+=`<text class="tick" x="${pl-7}" y="${yy+3.5}" text-anchor="end">${v.toFixed(0)}</text>`;
+  }
+  const area = rows.map((d,i)=>`${cx(i)},${y(d.arpu_contract)}`).join(' ')
+             + ' ' + rows.slice().reverse().map((d,i)=>`${cx(rows.length-1-i)},${y(d.arpu_paid)}`).join(' ');
+  g+=`<polygon points="${area}" fill="${C.blue}" opacity=".07"/>`;
+  const line = (key,col) => {
+    g+=`<polyline points="${rows.map((d,i)=>`${cx(i)},${y(d[key])}`).join(' ')}" fill="none"
+        stroke="${col}" stroke-width="2.2" stroke-linejoin="round"/>`;
+    rows.forEach((d,i)=>{
+      g+=`<circle class="bar" cx="${cx(i)}" cy="${y(d[key])}" r="3.2" fill="#fff" stroke="${col}" stroke-width="2"
+          data-t="${d.mon}月|${key==='arpu_contract'?'合同':'实付'}客单价 ${fmt(d[key])} 元|完成率 ${(d.paid/d.contract*100).toFixed(1)}%|单数 ${d.n}"/>`;
+    });
+  };
+  line('arpu_contract', C.blue);
+  line('arpu_paid', C.teal);
+  rows.forEach((d,i)=>{
+    g+=`<text class="tick" x="${cx(i)}" y="${H-32}" text-anchor="middle">${d.mon}月</text>`;
+    const done=(d.paid/d.contract*100);
+    g+=`<text x="${cx(i)}" y="${H-15}" text-anchor="middle" font-size="9.5" fill="#8C96A3"
+        font-family="inherit" font-variant-numeric="tabular-nums">${done.toFixed(0)}%</text>`;
+  });
+  g+=`<text x="${pl-7}" y="${H-15}" text-anchor="end" font-size="9" fill="#B4BCC7" font-family="inherit">完成率</text>`;
+  $('#chB').innerHTML=`<svg viewBox="0 0 ${W} ${H}">${g}</svg>`;
+  const d = P.kpi.paid/P.kpi.contract*100;
+  $('#doneNote').textContent = `全期完成率 ${d.toFixed(1)}% · 线上方为合同、下方为实付 · 底部为当月完成率`;
+  bindTips('#chB');
+}
+
+/* ── 图 C：档位结构（横向双条） ── */
+function renderC(){
+  const rows = P.tiers.filter(t=>t.tier!=='未标注');
+  const maxV = Math.max(...rows.map(r=>Math.max(r.n_share, r.contract_share)));
+  const bar = (val,col) => `<div class="barwrap"><i style="width:${Math.max(1,val/maxV*100)}%;background:${col}"></i></div>`;
+  $('#chC').innerHTML = rows.map(r=>`
+    <div class="row">
+      <span class="nm">${r.tier}</span>
+      ${bar(r.n_share, C.blue)}
+      <span class="v">${pct(r.n_share)}</span>
+      <span class="sub">${fmt(r.n)} 单</span>
+    </div>
+    <div class="row" style="margin-top:-4px">
+      <span class="nm" style="color:#B4BCC7;font-size:11px">合同额</span>
+      ${bar(r.contract_share, C.violet)}
+      <span class="v" style="color:#5B6572;font-weight:500">${pct(r.contract_share)}</span>
+      <span class="sub">${wan(r.contract)} 万</span>
+    </div>`).join('');
+  const low = rows.find(r=>r.tier==='首付<50%'), full = rows.find(r=>r.tier==='全款');
+  $('#chCfoot').innerHTML = `首付＜50% 用 ${pct(low.n_share)} 的单数拿下 ${pct(low.contract_share)} 的合同额；
+    客单价 ${fmt(low.arpu_contract)} 元，是${full.tier}（${fmt(full.arpu_contract)} 元）的 ${(low.arpu_contract/full.arpu_contract).toFixed(1)} 倍。`;
+}
+
+/* ── 图 D：合同档 × 分期率 ── */
+function renderD(){
+  const rows = P.band;
+  const W=480,H=250,pl=44,pr=16,pt=20,pb=44, iw=W-pl-pr, ih=H-pt-pb;
+  const maxV = niceMax(Math.max(...rows.map(r=>r.install_rate)));
+  const y = v => pt+ih-v/maxV*ih;
+  const step=iw/rows.length, bw=Math.min(36,step*0.5), cx=i=>pl+step*(i+0.5);
+  let g='';
+  for(let i=0;i<=4;i++){
+    const v=maxV/4*i, yy=y(v);
+    g+=`<line class="gridline" x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}"/>`;
+    g+=`<text class="tick" x="${pl-7}" y="${yy+3.5}" text-anchor="end">${v.toFixed(0)}%</text>`;
+  }
+  rows.forEach((d,i)=>{
+    const h=Math.max(1, pt+ih-y(d.install_rate));
+    g+=`<rect class="bar" x="${cx(i)-bw/2}" y="${y(d.install_rate)}" width="${bw}" height="${h}"
+        fill="${C.violet}" rx="3" opacity="${d.n<50?.55:1}"
+        data-t="${d.band}|分期率 ${d.install_rate.toFixed(1)}%|分期 ${d.install}/${d.n} 单|合同额 ${wan(d.contract)} 万元"/>`;
+    g+=`<text class="tick" x="${cx(i)}" y="${y(d.install_rate)-5}" text-anchor="middle" fill="#5B6572" font-weight="600">${d.install_rate.toFixed(0)}%</text>`;
+    g+=`<text class="tick" x="${cx(i)}" y="${H-26}" text-anchor="middle">${d.band}</text>`;
+    g+=`<text class="tick" x="${cx(i)}" y="${H-13}" text-anchor="middle" font-size="9" fill="#B4BCC7">${d.n} 单</text>`;
+  });
+  $('#chD').innerHTML=`<svg viewBox="0 0 ${W} ${H}">${g}</svg>`;
+  bindTips('#chD');
+}
+
+/* ── 图 E：分层客单价走势 ── */
+function renderE(){
+  const rows = P.mon_tier;
+  const get = (t,m) => rows.find(r=>r.tier===t && r.mon===m);
+  const W=1100,H=330,pl=52,pr=20,pt=20,pb=40, iw=W-pl-pr, ih=H-pt-pb;
+  const all = rows.filter(r=>r.arpu_contract!=null).map(r=>r.arpu_contract);
+  const maxV = niceMax(Math.max(...all)/10000);
+  const y = v => pt+ih-(v/10000)/maxV*ih;
+  const step=iw/MONTHS.length, cx=i=>pl+step*(i+0.5);
+  let g='';
+  for(let i=0;i<=4;i++){
+    const v=maxV/4*i, yy=y(v*10000);
+    g+=`<line class="gridline" x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}"/>`;
+    g+=`<text class="tick" x="${pl-8}" y="${yy+3.5}" text-anchor="end">${v.toFixed(0)}</text>`;
+  }
+  MONTHS.forEach((m,i)=>{
+    g+=`<text class="tick" x="${cx(i)}" y="${H-14}" text-anchor="middle">${m}月</text>`;
+  });
+  TIERS.forEach(t=>{
+    const col = TIER_C[t] || C.grey;
+    const pts = MONTHS.map((m,i)=>{ const d=get(t,m); return d?[cx(i), y(d.arpu_contract), d.n]:null; })
+                       .filter(Boolean);
+    if(!pts.length) return;
+    const main = (t==='全款');
+    g+=`<polyline points="${pts.map(p=>p[0]+','+p[1]).join(' ')}" fill="none" stroke="${col}"
+        stroke-width="${main?2.8:1.9}" stroke-linejoin="round" opacity="${main?1:.85}"/>`;
+    MONTHS.forEach((m,i)=>{
+      const d=get(t,m); if(!d) return;
+      const small = d.n<5;
+      g+=`<circle class="bar" cx="${cx(i)}" cy="${y(d.arpu_contract)}" r="${small?3:3.6}"
+          fill="${small?'#fff':col}" stroke="${col}" stroke-width="${small?1.6:0}"
+          data-t="${m}月 · ${t}|合同客单价 ${wan(d.arpu_contract)} 万元/单|单数 ${d.n}${small?'（样本不足5单）':''}"/>`;
+    });
+  });
+  $('#chE').innerHTML=`<svg viewBox="0 0 ${W} ${H}">${g}</svg>`;
+  $('#tierLegend').innerHTML = TIERS.map(t=>
+    `<span><i style="background:${TIER_C[t]};border-radius:50%"></i>${t}</span>`).join('')
+    + `<span style="color:#B4BCC7">｜空心点＝样本＜5</span>`;
+  bindTips('#chE');
+}
+
+/* ── 热力矩阵 ── */
+function renderHeat(){
+  const tiers = TIERS;
+  const val = {};
+  tiers.forEach(t=>{ val[t]={}; MONTHS.forEach(m=>{ const d=P.mon_tier.find(r=>r.tier===t&&r.mon===m); val[t][m]=d?d.arpu_contract:null; }); });
+  const nums = tiers.flatMap(t=>MONTHS.map(m=>val[t][m])).filter(v=>v!=null);
+  const max = Math.max(...nums), min = Math.min(...nums);
+  const col = v => {
+    if(v==null) return '#FAFBFC';
+    const r = (v-min)/(max-min||1);
+    return `rgba(47,91,234,${(0.06+0.78*Math.pow(r,0.85)).toFixed(3)})`;
+  };
+  const txt = v => v==null ? '#DDE2E9' : ((v-min)/(max-min||1)>0.55?'#fff':'#141A22');
+
+  let h='<thead><tr><th>付款能力</th>'+MONTHS.map(m=>`<th>${m}月</th>`).join('')+'<th>全期</th></tr></thead><tbody>';
+  tiers.forEach(t=>{
+    const tr = P.tiers.find(x=>x.tier===t);
+    h+=`<tr><td class="nm">${t}</td>`;
+    MONTHS.forEach(m=>{
+      const v=val[t][m];
+      h+=`<td style="background:${col(v)};color:${txt(v)}" data-t="${t} · ${m}月|合同客单价 ${v==null?'—':wan(v)+' 万元/单'}">${v==null?'—':wan(v)}</td>`;
+    });
+    h+=`<td style="background:#F7F9FC;font-weight:650">${wan(tr.arpu_contract)}</td></tr>`;
+  });
+  h+='</tbody>';
+  $('#heatTbl').innerHTML=h;
+  bindTips('#heatTbl');
+}
+
+/* ── 明细表 ── */
+function renderTables(){
+  const rows = P.tiers;
+  let h=`<thead><tr><th>付款能力</th><th>单数</th><th>单数占比</th><th>合同额(万)</th><th>金额占比</th>
+        <th>合同客单价</th><th>实付客单价</th><th>首付比中位</th></tr></thead><tbody>`;
+  rows.forEach(r=>{
+    const dim = r.tier==='未标注';
+    h+=`<tr class="${dim?'dim':''}"><td>${dim?'未标注（款项周期为空）':r.tier}</td><td>${fmt(r.n)}</td>
+        <td>${pct(r.n_share)}</td><td>${wan(r.contract)}</td>
+        <td>${pct(r.contract_share)}</td><td>${fmt(r.arpu_contract)}</td><td>${fmt(r.arpu_paid)}</td>
+        <td>${r.down_ratio==null?'—':r.down_ratio.toFixed(2)}</td></tr>`;
+  });
+  h+=`<tr class="tot"><td>合计</td><td>${fmt(P.kpi.n)}</td><td>100.0%</td><td>${wan(P.kpi.contract)}</td><td>100.0%</td>
+      <td>${fmt(P.kpi.arpu_contract)}</td><td>${fmt(P.kpi.arpu_paid)}</td>
+      <td>${P.kpi.down_ratio.toFixed(2)}</td></tr></tbody>`;
+  $('#tbl1').innerHTML=h;
+
+  let h2=`<thead><tr><th>月份</th><th>单数</th><th>合同额(万)</th><th>实付(万)</th>
+          <th>合同客单价</th><th>实付客单价</th><th>回款完成率</th><th>首付比中位</th></tr></thead><tbody>`;
+  let t2={n:0,contract:0,paid:0};
+  P.month.forEach(r=>{
+    t2.n+=r.n; t2.contract+=r.contract; t2.paid+=r.paid;
+    const done = r.contract? r.paid/r.contract*100 : null;
+    h2+=`<tr class="${r.complete?'':'dim'}"><td>${r.mon}月${r.complete?'':'<span style="font-size:9.5px;color:#B4BCC7;margin-left:3px">未完整</span>'}</td>
+      <td>${fmt(r.n)}</td><td>${wan(r.contract)}</td><td>${wan(r.paid)}</td>
+      <td>${fmt(r.arpu_contract)}</td><td>${fmt(r.arpu_paid)}</td><td>${pct(done)}</td>
+      <td>${r.down_ratio==null?'—':r.down_ratio.toFixed(2)}</td></tr>`;
+  });
+  h2+=`<tr class="tot"><td>合计</td><td>${fmt(t2.n)}</td><td>${wan(t2.contract)}</td><td>${wan(t2.paid)}</td>
+       <td>${fmt(t2.contract/P.kpi.n_valid)}</td><td>${fmt(t2.paid/P.kpi.n_valid)}</td>
+       <td>${pct(t2.paid/t2.contract*100)}</td><td>${P.kpi.down_ratio.toFixed(2)}</td></tr></tbody>`;
+  $('#tbl2').innerHTML=h2;
+}
+
+/* ── 说明 ── */
+function renderNotes(){
+  const dq = P.dq;
+  $('#alertTxt').textContent =
+    `10 月成交仅 ${P.month[9].n} 单且截至 ${P.meta.last_date}，未完整；「全款」标记里有部分首期未付清（可能含增户或分期未回填），已按原值使用未做修正。`;
+  $('#alertBtn').textContent = `展开 ${dq.length} 项口径事项`;
+  $('#alertDetail').innerHTML = dq.map(d=>`<div><em>[${d.level==='warn'?'注意':'说明'}] ${d.item}</em>${d.detail}${d.impact?`<br><span style="color:#A5761C;opacity:.85">→ ${d.impact}</span>`:''}</div>`).join('');
+  $('#alertBtn').onclick=()=>{
+    const el=$('#alertDetail'); el.classList.toggle('open');
+    $('#alertBtn').textContent = el.classList.contains('open')?'收起':`展开 ${dq.length} 项口径事项`;
+  };
+
+  $('#noteB').innerHTML = `
+    <h4>五个指标的定义</h4>
+    <li><b>成交单数</b>＝订单表按「订单编号」去重后的单份合同数，时间取「成交时间」落在 2026.1–10，共 ${fmt(P.kpi.n)} 单。</li>
+    <li><b>合同额</b>＝「合同总金额」求和，${wan(P.kpi.contract)} 万元；<b>实际收款</b>＝「支付金额」求和，${wan(P.kpi.paid)} 万元。</li>
+    <li><b>合同客单价</b>＝合同额 ÷ 有效单数（合同额＞0）＝${fmt(P.kpi.arpu_contract)} 元/单。</li>
+    <li><b>实付客单价</b>＝实际收款 ÷ 有效单数＝${fmt(P.kpi.arpu_paid)} 元/单；两者之比即回款完成率 ${pct(P.kpi.paid/P.kpi.contract*100)}。</li>
+    <li><b>首付比例</b>＝首期认款金额 ÷ 合同总金额，仅对合同额＞0 且首期有值的单计算；图表用<b>中位数</b>，避免个别极端值拉偏。</li>
+
+    <h4>付款能力四档怎么分</h4>
+    <li><b>全款</b>＝「款项周期」字段为「全款」，${fmt(P.tiers[0].n)} 单。</li>
+    <li><b>首付≥90%</b>＝款项周期为「分期」且首付比例 ≥ 0.9，${fmt(P.tiers[1].n)} 单。</li>
+    <li><b>首付50–90%</b>＝分期且 0.5 ≤ 首付比例 &lt; 0.9，${fmt(P.tiers[2].n)} 单。</li>
+    <li><b>首付&lt;50%</b>＝分期且首付比例 &lt; 0.5，${fmt(P.tiers[3].n)} 单。<b>切点取 50% 而非 70%</b>，是因为按 70% 切中间档只有 20 单，趋势会失真。</li>
+    <li>另有 ${fmt(P.tiers[4]?P.tiers[4].n:0)} 单未填款项周期，计入总量但不进任何档位。</li>
+
+    <h4>三项读数注意</h4>
+    <li><b>分层趋势要配合样本数看。</b>「首付≥90%」每月仅 1–4 单，图上用空心点标出样本＜5 的月份，波动主要来自个案而非趋势。</li>
+    <li><b>实付口径含账龄差异。</b>实付金额是「截至目前的累计支付」，近月成交的单还没来得及付完，实付客单价天然偏低；跨月比较看完成率更有意义。</li>
+    <li><b>10 月未完整。</b>成交截至 ${P.meta.last_date}，10 月仅 ${P.month[9].n} 单，客单价与完成率均不宜与整月直接对比。</li>
+
+    <h4>数据来源</h4>
+    <li>订单表_2026.1-2026.9.xlsx（订单导出明细）＋ 订单表_2026.10.xlsx，原始 ${fmt(P.meta.raw_rows)} 行。</li>
+    <li>未使用「回款导出明细」工作表——该表全部仅 2 行，无法计算回款周期；未使用「客户星级」——一星占 94.5%，无区分度。</li>
+    <li>本页为静态快照，数据更新需重新生成，制表时间 ${P.meta.generated_at}。</li>
+  `;
+  $('#noteH').onclick=()=>{
+    const b=$('#noteB'); b.classList.toggle('open');
+    $('#noteC').textContent = b.classList.contains('open')?'收起':'展开';
+  };
+}
+
+$('#mWin').textContent = P.meta.window;
+$('#mLast').textContent = P.meta.last_date || '—';
+$('#mGen').textContent = P.meta.generated_at;
+renderSummary(); renderKPI(); renderA(); renderB(); renderC(); renderD(); renderE(); renderHeat(); renderTables(); renderNotes();
+</script>
+</body>
+</html>
