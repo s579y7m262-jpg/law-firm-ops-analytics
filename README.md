@@ -1,6 +1,6 @@
 # 律所经营分析：从 CRM 导出到可决策的指标体系
 
-> 一家区域性律所 2026 年业绩下滑，四张手工导出的 Excel、四种互相矛盾的"业绩"口径。
+> 一家区域性律所 2026 年业绩下滑，五张手工导出的 Excel、四种互相矛盾的"业绩"口径。
 > 这个仓库是把它做成**一套能对账的指标体系 + 归因 + 预测 + 自动监测**的全过程。
 
 <p>
@@ -16,7 +16,7 @@
 
 ## English summary
 
-A regional law firm's revenue fell sharply in 2026, and four hand-exported Excel files produced four
+A regional law firm's revenue fell sharply in 2026, and five hand-exported Excel files produced four
 contradictory definitions of "revenue". This project turns them into one auditable metric system:
 
 - **Metric governance** — a dictionary that survived 5 revisions (a split-attribution rule was corrected
@@ -35,7 +35,7 @@ All regional and firm identifiers are **anonymized** (`A/B/C/D 区`); no raw dat
 
 ## 一句话结论
 
-七个字：**跌的全是"量"，单价反而在涨。**
+一句话：**跌的全是"量"，单价反而在涨。**
 
 | | 数字 | 说明 |
 |---|---|---|
@@ -51,12 +51,12 @@ All regional and firm identifiers are **anonymized** (`A/B/C/D 区`); no raw dat
 ```
 .
 ├── dashboards/          成品看板（单文件 HTML，双击即开；已脱敏）
-│   ├── 01_经营指标看板.html         727 KB  全所经营指标 + 三层下钻 + 数据说明
+│   ├── 01_经营指标看板.html         689 KB  全所经营指标 + 三层下钻 + 数据说明
 │   ├── 02_业绩下滑归因.html          43 KB  量价分解 / 瀑布校验 / 排除项 / 监测阈值
-│   ├── 03_成交率预测.html            69 KB  删失校正 + 三模型混合 + 回测
+│   ├── 03_成交率预测.html            70 KB  删失校正 + 三模型混合 + 回测
 │   ├── 04_业绩预测三情景.html        48 KB  漏斗驱动 + 敏感性 + 2027Q1
 │   ├── 05_支付能力与客单价.html      58 KB  付款条件 × 客单价 × 回款
-│   └── monitor.html                  54 KB  自动化监测仪表盘（含 data.js 热更新）
+│   └── monitor.html                  55 KB  自动化监测仪表盘（含 data.js 热更新）
 ├── docs/                方法与口径（本仓库的核心）
 │   ├── 01-business-context.md   业务模式与问题定义
 │   ├── 02-data-pipeline.md      三层链路、连接键、脚本映射
@@ -131,9 +131,9 @@ flowchart LR
 
 | 产物 | 形态 | 为什么这样交付 |
 |---|---|---|
-| 经营指标看板 | 单文件 HTML 727 KB | 受众电脑上没有 Python/BI 账号，双击即开、可微信发送、断网可看 |
+| 经营指标看板 | 单文件 HTML 689 KB | 受众电脑上没有 Python/BI 账号，双击即开、可微信发送、断网可看 |
 | 业绩下滑归因 | 单文件 HTML 43 KB | 瀑布图 + 排除项表格，让"不是这个原因"也可见 |
-| 成交率预测 | 单文件 HTML 69 KB | 三个估计并排展示，不藏不确定性 |
+| 成交率预测 | 单文件 HTML 70 KB | 三个估计并排展示，不藏不确定性 |
 | 三情景预测 | 单文件 HTML 48 KB | 参数可改，敏感性直接标在图上 |
 | 支付能力分析 | 单文件 HTML 58 KB | 客单价与首付比双轴，讲清"涨价靠放账期" |
 | 复核底表 | Excel 13 sheet | 每张表可回溯到看板某一块，供财务复核 |
@@ -149,7 +149,7 @@ flowchart LR
 # 依赖只有 3 个
 pip install pandas numpy openpyxl
 
-# 1. 把 CRM 导出的 4 个 xlsx 放进 data/raw/（文件名见 data/README.md）
+# 1. 把 CRM 导出的 5 个 xlsx 放进 data/raw/（订单表 2 份 / 收入表 / 花名册 / 台账，文件名见 data/README.md）
 # 2. 构建事实表 → 渲染看板 → 生成底表
 python src/etl/build_gold.py
 python src/render.py
