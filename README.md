@@ -63,13 +63,17 @@ All regional and firm identifiers are **anonymized** (`A/B/C/D 区`); no raw dat
 │   ├── 03-metric-dictionary.md  ★ 指标口径字典 + 口径演进史
 │   ├── 04-methods.md            双因子分解 / 删失校正 / 三情景 / 阈值设计
 │   ├── 05-data-quality.md       ★ 13 个会改变结论的数据陷阱
-│   └── 06-findings.md           结论、行动建议、以及"回答不了的"
+│   ├── 06-findings.md           结论、行动建议、以及"回答不了的"
+│   └── 07-monitoring.md         自动监测：幂等、当月校正、三色灯与调度
 ├── src/
 │   ├── etl/build_gold.py        原始表 → 三张事实表（金额按行、件数按比例拆）
 │   ├── render.py                payload + 模板 → 单文件看板
 │   ├── excel/build_workbook.py  payload → 13 sheet 复核底表
 │   ├── analysis/                归因 / 删失校正 / 三情景 / 支付能力 / 区域专项
-│   └── monitor/monitor_etl.py   每日自动刷新的监测仪表盘
+│   └── monitor/monitor_etl.py   每工作日自动刷新的监测仪表盘
+├── automation/
+│   ├── run_monitor.bat          Windows 启动器（GBK+CRLF，探测 Python 并校验依赖）
+│   └── register_task.ps1        注册计划任务（周一至周五 × 6 个时点，可卸载）
 ├── tools/               脱敏与截图（可复现，非手工改文件）
 ├── data/                字段说明；原始数据不入仓
 └── images/              看板截图
@@ -143,6 +147,42 @@ flowchart LR
 
 ---
 
+## 从一次性分析到日常监测
+
+![监测仪表盘](images/06_monitor.png)
+
+分析做完之后，真正难的是这一句：**每天早上十点，销售负责人打开一个链接，就知道今天该动什么。**
+
+所以第十一份产物不是报告，是一条每天自己跑的流水线：
+
+```
+automation/run_monitor.bat --silent   ← 计划任务调这个
+  └─ src/monitor/monitor_etl.py       ← 自动发现源文件 → 计算 → 出页面
+       ├─ dashboards/monitor.html      ← 自包含快照，可直接发人
+       └─ dashboards/monitor_data.js   ← 页面每 2 分钟轮询，变了才重绘
+```
+
+四件必须做对的事，否则这个看板两周内就会没人看：
+
+| 处理 | 为什么 |
+|---|---|
+| **指纹幂等** | 一天跑 6 次，源文件没变就不重算（SHA1 over 文件名/mtime/size），`--force` 兜底 |
+| **当月校正** | 月初数据没长齐，直接算必然报红。用 HT 删失校正 + 历史同进度曲线折算，`ρ<0.55` 不外推，宁可显示"未成熟" |
+| **灰灯是一等公民** | 退费台账只到 9 月时，10 月退费率显示灰灯 + "台账未覆盖"，**不能画成 0% 绿** |
+| **滞后指标用最近完整月** | 单场产出、退费率当月分子没长齐，拿当月判会系统性偏低 |
+
+```powershell
+# 注册调度：周一至周五 × 6 个时点（10:00/10:20/10:40/11:00/14:00/17:00）
+.\automation\register_task.ps1
+.\automation\register_task.ps1 -RunNow      # 立刻跑一次
+.\automation\register_task.ps1 -Unregister  # 卸载
+```
+
+上午每 20 分钟重试一次，是因为 CRM 导出的落盘时间不稳定；靠指纹跳过重复计算，重试成本几乎为零。
+细节（降级策略、验证清单、为什么没上 GitHub Actions）见 [docs/07](docs/07-monitoring.md)。
+
+---
+
 ## 快速开始
 
 ```bash
@@ -164,6 +204,10 @@ python src/render.py attribution censoring scenarios payment
 
 # 4. 监测仪表盘（--force 忽略指纹缓存）
 python src/monitor/monitor_etl.py --force
+
+# 5. 日常自动化：手动跑一次 / 注册成计划任务
+automation\run_monitor.bat
+powershell -ExecutionPolicy Bypass -File automation\register_task.ps1
 ```
 
 区域代号默认 `A区,B区,C区,D区`，可用环境变量覆盖：`REGIONS="你的区域1,你的区域2" python src/etl/build_gold.py`。

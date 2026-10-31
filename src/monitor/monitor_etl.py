@@ -3,19 +3,20 @@
 经营监测仪表盘 —— 自动化 ETL
 ================================================
 用法：
-    python etl/monitor_etl.py            # 正常跑（源文件没变则跳过）
-    python etl/monitor_etl.py --force    # 强制重算
+    python src/monitor/monitor_etl.py            # 正常跑（源文件没变则跳过）
+    python src/monitor/monitor_etl.py --force    # 强制重算
+    automation/run_monitor.bat --silent          # Windows 计划任务入口
 
-输入（目录内自动发现，新增月份文件丢进来即可，无需改代码）：
+输入（data/raw/ 内自动发现，新增月份文件丢进来即可，无需改代码）：
     订单表_2026*.xlsx                      约见量 / 成交 / 合同额
     收入表_2026*.xlsx                      业绩（「业绩金额」按月）
     给数据组结案，退费，返点汇总表*.xlsx    退费（取最新一份）
 
 输出：
-    2026经营监测仪表盘.html        自包含单文件（可直接发人）
-    monitor_data.js     供页面 2 分钟轮询热更新
-    etl/monitor_state.json         源文件指纹，用于跳过无变化的重算
-    etl/monitor.log                追加日志
+    dashboards/monitor.html        自包含单文件（可直接发人）
+    dashboards/monitor_data.js     供页面 2 分钟轮询热更新
+    build/monitor_state.json       源文件指纹，用于跳过无变化的重算
+    build/monitor.log              追加日志
 
 口径（与《业绩下滑归因与监测方案》《2026-2027 业绩预测》完全一致）：
     业绩   = 收入表「业绩金额」按 sheet 月份汇总
